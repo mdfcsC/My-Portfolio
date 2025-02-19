@@ -1,0 +1,34 @@
+<html>
+ <head>
+   <link rel='stylesheet' href='minesweeper.css'/>
+   <script type='module' src='minesweeper.js'></script>
+   <title>My Minesweeper</title>
+  </head>
+  <body>
+    <h1> Minesweeper </h1>
+
+    <p> Welcome to Minesweeper. Click the button below to start a new game. </p>
+
+    <p class="buttonContainer">
+      <button type='button' class="newGame">New Game</button>
+      <button type='button' class="showRanking">Show Ranking</button>
+      <button type='button' class="cheat">Cheat Mode</button>
+    </p>
+
+    <div class='board'></div>
+
+    <p class="timerKit">
+      <span class="timerWord">Round #<em class="roundTimer">?</em>&nbsp;&nbsp;Time: </span>
+      <span class="timer">00 : 00</span>
+    </p>
+
+    <dialog id="myDialog">
+      <div id="scoreBoard">
+        <div id="title">Score Ranking</div>
+        <div id="name">Round</div>
+        <div id="time">Time</div>
+      </div>
+      <button type='button' class="closeDialog">Close</button>
+    </dialog>
+  </body>
+</html>

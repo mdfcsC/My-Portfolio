@@ -1,0 +1,100 @@
+h1 {
+    text-align: center;
+}
+
+p {
+    text-align: center;
+}
+
+p.buttonContainer {
+    text-align: center;
+}
+
+button {
+    margin: 0 1%;
+    padding: 1% 2%;
+}
+
+div.board {
+    background-color: #BFC9CA;
+    border: 2px solid #AEB6BF;
+    margin: 1% 25% 1% 25%;
+    width: 50%;
+    height: 50%;
+    display: grid;
+    grid-template: repeat(20, 1fr) / repeat(20, 1fr);
+    column-gap: .5%;
+    row-gap: .5%;
+    min-height: 0;
+    min-width: 0;
+}
+
+div.board > div {
+    background-color: #F2F3F4;
+    text-align: center;
+    font-weight: bold;
+    /* 视窗的最小尺寸(宽度或高度)的1%，但使用 clamp() 设置一个自适应范围，最小8px，最大16px */
+    font-size: clamp(8px, 1.5vmin, 16px);
+}
+
+div.board > div.clear {
+    background-color: #BFC9CA;
+}
+
+div.board > div.bomb {
+    background-color: #BFC9CA;
+    color: red;
+}
+
+/* 标记旗帜 */
+div.board > div.flag {
+    background-color: #BFC9CA;
+    color: brown;
+}
+
+.timerKit {
+    text-align: center;
+    margin-top: 2%;
+    color: black;
+}
+
+.timerKit > span {
+    font-family: serif;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.timer {
+    display: inline-block;
+    border: 1px solid black;
+    height: 25px;
+    width: 70px;
+    padding: 2px;
+    line-height: 25px; /* 垂直居中，25px是height的值 */
+}
+
+#myDialog {
+    font-family: serif;
+    text-align: center;
+    width: 40%;
+    height: 50%;
+}
+
+#scoreBoard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(10, 1fr);
+    grid-column: span 1;
+    grid-row: span 1;
+    margin: 0 auto;
+}
+
+#scoreBoard > div {
+    text-align: center;
+    font-size: 16px;
+}
+
+#title {
+    font-weight: bold;
+    grid-column: span 2;
+}
