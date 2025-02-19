@@ -16,4 +16,4 @@ I added some functions beyond what was asked in the assignment, just for fun, or
 
 除了上学期的 C 的作业写了类似消消乐的程序（但是没有视觉化），算是真正意义上写的第一个小游戏，纪念一下！  
 
-来，试试看，扫雷！[PLAY!](docs/minesweeper/minesweeper.html)  
+来，试试看，扫雷！[PLAY!](https://mdfcsc.github.io/My-Portfolio/minesweeper/minesweeper.html)  
