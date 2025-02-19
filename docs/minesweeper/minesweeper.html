@@ -1,16 +1,31 @@
 <html>
  <head>
-   <link rel='stylesheet' href='minesweeper.css'/>
-   <script type='module' src='minesweeper.js'></script>
+   <link rel='stylesheet' href='minesweeper.css?v=' id='stylesheet' />
+   <script type='module' src='minesweeper.js?v' id="script"></script>
    <title>My Minesweeper</title>
+
+   <script>
+    // 生成当前时间戳
+    var timestamp = new Date().getTime();
+    // 给 CSS 文件和 JS 文件加上时间戳，确保刷新缓存
+    document.getElementById('stylesheet').href = 'minesweeper.css?v=' + timestamp;
+    document.getElementById('script').src = 'minesweeper.js?v=' + timestamp;
+   </script>
+
   </head>
   <body>
     <h1> Minesweeper </h1>
 
     <p> 
       Welcome to Minesweeper. Click the button below to start a new game. 
-      <br>Or click <a href="../index.html">here</a> to go back to the main page. 
+      <br>Or click <a id="mainPageLink">here</a> to go back to the main page. 
     </p>
+    <script>
+      // 生成当前时间戳
+      var timestamp = new Date().getTime();
+      // 给链接添加时间戳，确保每次都是最新版本
+      document.getElementById('mainPageLink').href = '../index.html?v=' + timestamp;
+    </script>
 
     <p class="buttonContainer">
       <button type='button' class="newGame">New Game</button>
