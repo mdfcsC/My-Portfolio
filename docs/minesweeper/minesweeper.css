@@ -20,21 +20,26 @@ div.board {
     border: 2px solid #AEB6BF;
     margin: 1% 25% 1% 25%;
     width: 50%;
-    height: 50%;
+    /* 保持正方形，宽高比1:1 */
+    aspect-ratio: 1 / 1;
     display: grid;
     grid-template: repeat(20, 1fr) / repeat(20, 1fr);
     column-gap: .5%;
     row-gap: .5%;
-    min-height: 0;
-    min-width: 0;
+    /* 限制最小宽高 */
+    min-height: 320px;
+    min-width: 320px;
 }
 
 div.board > div {
     background-color: #F2F3F4;
     text-align: center;
     font-weight: bold;
-    /* 视窗的最小尺寸(宽度或高度)的1%，但使用 clamp() 设置一个自适应范围，最小8px，最大16px */
-    font-size: clamp(8px, 1.5vmin, 16px);
+    /* 视窗的最小尺寸(宽度或高度)的1.8%，但使用 clamp() 设置一个自适应范围，最小8px，最大16px */
+    font-size: clamp(8px, 1.8vmin, 16px);
+    /* 多行内容也可以各自垂直居中 */
+    place-items: center;
+    display: grid;
 }
 
 div.board > div.clear {
