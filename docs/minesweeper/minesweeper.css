@@ -11,7 +11,7 @@ p.buttonContainer {
 }
 
 button {
-    margin: 0 1%;
+    margin: 1% 1%;
     padding: 1% 2%;
 }
 
@@ -76,14 +76,15 @@ div.board > div.flag {
 #myDialog {
     font-family: serif;
     text-align: center;
-    width: 40%;
-    height: 50%;
+    width: 15%;
+    min-width: 10em;
+    max-height: 50%;
 }
 
 #scoreBoard {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-rows: repeat(auto, 1fr);
     grid-column: span 1;
     grid-row: span 1;
     margin: 0 auto;
