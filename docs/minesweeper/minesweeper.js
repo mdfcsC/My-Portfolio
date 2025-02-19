@@ -88,7 +88,7 @@ function touchTile(tileId, autoClick) {
         if (mines.includes(`tile_${tileId}`)) {
             return;
         }
-        if (mineNeighbours(tileId) > 0 && Math.random() < 0.8) {
+        if (Math.random() < 0.5) {
             return;
         }
     }
