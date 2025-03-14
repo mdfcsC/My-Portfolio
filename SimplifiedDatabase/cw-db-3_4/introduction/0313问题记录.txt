@@ -1,0 +1,92 @@
+启动服务器调试
+./mvnw -X exec:java -Dexec.mainClass=“edu.uob.DBServer"
+
+启动客户端调试
+./mvnw -X exec:java -Dexec.mainClass=“edu.uob.DBClient”
+
+启动示例测试
+./mvnw clean -test -Dtest=edu.uob.ExampleDBTests
+（通过）
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.068 s - in edu.uob.ExampleDBTests
+
+
+Tokeniser把用户输入转为字符，记录类型和值
+MyParser解析字符命令，如果符合语法树，调用Command
+Command调用Model搭建对应的表，然后用storage包或者MyView直接进行文件存储或表格的终端视图输出
+
+[OK] 或 [ERROR] 开头的信息都是我自己编写的信息提示，如预期运行
+
+
+目前的问题：
+一、
+列中的值及条件的值如果同时有字符串或者数字，在MySimpleCondition里面没有办法同时处理
+比如表格数据如下：
+id      date    time    year    080
+1       1       TRUE    2025    haha
+2       0.5     Null    britol  NULL
+3       -1.4    NULL    6gt     NULL
+
+则命令失败：
+SQL:> select * from 1114 where 080 > 0.5
+For input string: "haha"
+
+SQL:> select * from 1114 where year == 2025
+For input string: "britol"
+
+但把条件值变为字符串则成功
+SQL:> select * from 1114 where year =='2025'
+[OK]
+id      date    time    year    080
+1       1       TRUE    2025    haha
+
+打印对条件的值的token解析
+Received message: select * from 1114 where year == 2025
+2025
+INT_LITERAL
+Received message: select * from 1114 where year =='2025'
+2025
+STRING_LITERAL
+
+
+二、
+index out of bound
+貌似只会在条件的值是Integer是出问题，可以正确处理浮点数
+怀疑是MyParser中对parseCondition()对条件的值的解析有问题
+
+测试信息如下：
+
+客户端输入输出
+SQL:> select * from 1114 where date == 0.5
+[OK]
+id      date    time    year    080
+2       0.5     Null    britol  NULL
+
+SQL:> select * from 1114 where date >= 0.5
+[OK]
+id      date    time    year    080
+1       1       TRUE    2025    haha
+2       0.5     Null    britol  NULL
+
+SQL:> select * from 1114 where date == -1.4
+[OK]
+id      date    time    year    080
+3       -1.4    NULL    6gt     NULL
+
+SQL:> select * from 1114 where date == 1
+Index 34 out of bounds for length 34
+
+
+服务器显示输出
+Received message: select * from 1114 where date == 0.5
+0.5
+FLOAT_LITERAL
+
+Received message: select * from 1114 where date >= 0.5
+0.5
+FLOAT_LITERAL
+
+Received message: select * from 1114 where date == -1.4
+-1.4
+FLOAT_LITERAL
+
+Received message: select * from 1114 where date == 1
