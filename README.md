@@ -26,13 +26,13 @@ I added some functions beyond what was asked in the assignment, just for fun, or
 
 Java 课的第一个大作业，三周时间写一个数据库 —— 我错了，在最后一周才开始造火箭，还是边学边造😭  
 
-有一些奇特的BNF语法规则，说是为了简化我们的代码实现，但是多的时间用来理解它的语法树了 —— 上学期的 Architecture 教得还是简单了😓  
+有一些 [奇特的BNF语法规则](./cw-db-3_4/introduction/BNF.txt) ，说是为了简化我们的代码实现，但是多的时间用来理解它的语法树了 —— 上学期的 Architecture 教得还是简单了😓  
 
-一些教师的授课资源：[任务布置](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/07-DB-Briefing.pdf)，[方法指引](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/08-DB-Implementation.pdf)，[工作手册](https://github.com/drslock/JAVA2024/tree/main/Weekly%20Workbooks/07%20DB%20assignment)  
+一些教师的授课资源： [任务布置](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/07-DB-Briefing.pdf) ， [方法指引](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/08-DB-Implementation.pdf) ， [工作手册](https://github.com/drslock/JAVA2024/tree/main/Weekly%20Workbooks/07%20DB%20assignment)  
 
-2025年3月13日晚，经过将近一周的奋战，终于成功通过所有 BNF 需要的 SQL 命令的手动测试！反反复复写了好几版，目前这是[第4版](./cw-db-3_4/)，决定用 GitHub 记录一下！  
+2025年3月13日晚，经过将近一周的奋战，终于成功通过所有 BNF 需要的 SQL 命令的手动测试！反反复复写了好几版，目前这是 [第4版](./cw-db-3_4/) ，决定用 GitHub 记录一下！  
 花了两天时间，在 Claude、ChatGPT、DeepSeek 的帮助下，才大致想明白整个项目的框架；（这时间上学期的C的作业都快写完了）  
-希望AI查重能通过，虽然我逢人就说“当然用AI写”，以及我真的遇到问题就会问AI，但是我真的手动写了很多“垃圾”，以至于今天下午约到 Tutor 让他帮我检查问题，他直呼我的代码逻辑太混乱了（幸好一个多小时终于解决了！主要的问题是： `MySimpleCondition` 类中，如果本身是浮点数，是不能被 `Integer.parseInt()` 转为整形的，会直接导致错误抛出；以及一个 `Tokeniser` 中读取到数字时的循环逻辑问题。）  
+希望AI查重能通过，虽然我逢人就说“当然用AI写”，以及我真的遇到问题就会问AI，但是我真的手动写了很多“垃圾”，以至于今天下午约到 Tutor 让他帮我检查问题，他直呼我的代码逻辑太混乱了（幸好一个多小时终于解决了！ [主要的问题](./cw-db-3_4/introduction/0313问题记录.pages) 是： `MySimpleCondition` 类中，如果本身是浮点数，是不能被 `Integer.parseInt()` 转为整形的，会直接导致错误抛出；以及一个 `Tokeniser` 中读取到数字时的循环逻辑问题。）  
 
 上课时教授说要自己编写 JUnit 测试，好好好正在开始学习什么是 JUnit ···  
 
