@@ -1,0 +1,13 @@
+.gitignore
+
+# Mac's trash
+.DS_Store
+
+# Environment variables
+.env
+
+# IDE files
+.idea
+
+# VSCode files
+.vscode
