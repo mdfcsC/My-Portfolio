@@ -44,7 +44,7 @@ Java 课的第一个大作业，三周时间写一个数据库 —— 我错了�
 
 今天中午提交了最终作业。  
 
-1. [最终版](./SimplifiedDatabase/cw-db-3_5/) 修改了对 SQL query 语句的要求，之前到代码运行结尾是 EOF 或者分号，现在要求正常语句后必须跟分号（没记错的话这部分修改的文件是 [MyParser.java](./SimplifiedDatabase/cw-db-3_5/src/main/java/edu/uob/analyser/MyParser.java)）  
+1. [最终版](./SimplifiedDatabase/cw-db-3_5/) 修改了对 SQL query 语句的要求，之前到代码运行结尾是 EOF 或者分号，现在要求正常语句后必须跟分号（没记错的话这部分修改的文件是 [MyParser.java](./SimplifiedDatabase/cw-db-3_5/src/main/java/edu/uob/analyser/MyParser.java) ）  
 2. 让 Claude 帮忙写了两个 JUnit 测试文件（昨天打了至少10个小时的代码，一直在 debug ，晚上学了一会儿 JUnit 就困睡着了）：一个 [主测 SQL Command](./SimplifiedDatabase/cw-db-3_5/src/test/java/edu/uob/MyDbTests.java) ，一个 [主测有无分号](./SimplifiedDatabase/cw-db-3_5/src/test/java/edu/uob/MySemicolonTests.java) 🥲  
 3. 对 id 隐患的修改没能完成，只留了一个 [未成型的类 + 类的说明](./SimplifiedDatabase/cw-db-3_5/src/main/java/edu/uob/storage/IdManager.java)  
 
@@ -71,3 +71,11 @@ Java 课的第一个大作业，三周时间写一个数据库 —— 我错了�
 > ```  
 >  
 > 哈哈英国佬不仅速度慢 —— 换个充电接口换两个星期，收费贵 —— 换个充电接口想收我 100 镑，标准也挺灵活 —— 虽然很高兴不用付钱了，但总咽不下口气  
+
+## Simple Text Adventure Game
+
+*2025-03-23*
+
+今天正式开始做本周一布置的 JAVA 课的大作业： [工作手册](https://github.com/drslock/JAVA2024/tree/main/Weekly%20Workbooks/10%20STAG%20assignment) 和 [课堂布置说明](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/10-STAG-Briefing.pdf)  
+
+在网上自己找到了游戏原型鼻祖 [Zork](https://tinyurl.com/zork-game) 的 [简介](https://zork.fandom.com/wiki/White_house) 和 [玩法](https://zork.fandom.com/wiki/Command_List)  
