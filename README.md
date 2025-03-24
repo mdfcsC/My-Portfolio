@@ -2,6 +2,10 @@
 
 Some minor achievements ...
 
+[Minesweeper](#minesweeper)  
+[DB](#simplified-database)  
+[STAG](#simple-text-adventure-game)  
+
 ## Minesweeper
 
 *2025-02-19*  
@@ -72,9 +76,19 @@ Java 课的第一个大作业，三周时间写一个数据库 —— 我错了�
 >  
 > 哈哈英国佬不仅速度慢 —— 换个充电接口换两个星期，收费贵 —— 换个充电接口想收我 100 镑，标准也挺灵活 —— 虽然很高兴不用付钱了，但总咽不下口气  
 
+*2025-03-24*  
+
+今天出了 [成绩和反馈](./SimplifiedDatabase/Feedback.md) 。  
+
+早上看到班群里有人在问邮件里最后的百分比是成绩吗，赶忙打开邮件看 Simon 的反馈。一开始看见几个大字 “Failed” 觉得天塌了，这门课不会要挂了吧，拉到最后看到 15% 的百分比更是觉得彻底凉凉。  
+
+再翻群里的聊天记录他们说成绩在 Blackboard 上，赶紧登录查看成绩 —— 如果是和上学期的 C 一样的打分标准，那也不算特别好，但也不算差。  
+
+仔细看邮件的反馈，觉得应该问题挺多的，总体而言应该成绩不算好。有些问题（比如 DRY）我之前也意识到了，但没时间改了，这次做 STAG 作业的时候一定留足时间、在编写时就注重 Code Quality ！  
+
 ## Simple Text Adventure Game
 
-*2025-03-23*
+*2025-03-23*  
 
 今天正式开始做本周一布置的 JAVA 课的大作业： [工作手册](https://github.com/drslock/JAVA2024/tree/main/Weekly%20Workbooks/10%20STAG%20assignment) 和 [课堂布置说明](https://github.com/drslock/JAVA2024/blob/main/Weekly%20Briefings/10-STAG-Briefing.pdf)  
 
