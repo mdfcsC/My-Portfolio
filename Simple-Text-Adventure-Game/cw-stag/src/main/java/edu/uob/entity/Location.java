@@ -1,7 +1,5 @@
 package edu.uob.entity;
 
-import edu.uob.parser.EntityType;
-
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,7 +10,7 @@ public class Location extends GameEntity{
     private HashMap<String, GameEntity> furniture;
 
     public Location(String name, String description) {
-        super(name, description, EntityType.LOCATIONS);
+        super(name, description, EntityType.LOCATION);
         this.paths = new HashSet<>();
         this.characters = new HashMap<>();
         this.artefacts = new HashMap<>();

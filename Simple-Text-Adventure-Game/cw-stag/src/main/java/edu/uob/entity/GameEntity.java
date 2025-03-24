@@ -1,7 +1,5 @@
 package edu.uob.entity;
 
-import edu.uob.parser.EntityType;
-
 public abstract class GameEntity
 {
     private String name;
