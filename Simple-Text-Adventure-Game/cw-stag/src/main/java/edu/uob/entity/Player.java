@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class Player extends GameEntity{
     private int maxHealth;
     private int health;
+    // TODO: is it really a good idea to use HashMap rather than HashSet?
     private HashMap<String, GameEntity> inventory;
     private Location currentLocation;
 
@@ -44,7 +45,8 @@ public class Player extends GameEntity{
         return this.inventory;
     }
 
-    public void addInventory(GameEntity gameEntity) {
+    // for game entity that already exists in the game system, just move between locations and player's inventory
+    public void pushInventory(GameEntity gameEntity) {
         this.inventory.put(gameEntity.getName(), gameEntity);
     }
 

@@ -6,6 +6,7 @@ import edu.uob.entity.Location;
 import edu.uob.entity.Player;
 import edu.uob.parser.ActionParser;
 import edu.uob.parser.EntityParser;
+import edu.uob.parser.InputParser;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,9 +16,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public final class GameServer {
 
@@ -26,11 +27,10 @@ public final class GameServer {
     private Location startLocation;
     private Location storeroom;
     private HashMap<String, GameEntity> entitiesHashMap;
-
     private HashMap<String, Player> playersHashMap;
     private int maxHealth;
-
     private HashSet<GameAction> gameActions;
+    private InputParser inputParser;
 
     private static final char END_OF_TRANSMISSION = 4;
 
@@ -67,6 +67,7 @@ public final class GameServer {
             this.playersHashMap = new HashMap<>();
             this.maxHealth = 3;
             this.gameActions = actionParser.getGameActions();
+            this.inputParser = new InputParser();
 
         } catch (Exception e) {
             System.out.println("[ERROR] Failed to initialize game server: ");
@@ -105,9 +106,7 @@ public final class GameServer {
         }
 
         if (result == null) {
-            StringBuilder errorResult = new StringBuilder();
-            errorResult.append("Unknown command: ").append(actualCommand);
-            throw new RuntimeException(errorResult.toString());
+            throw new RuntimeException(String.format("Unknown command: %s", actualCommand));
         }
 
         return result;
@@ -123,7 +122,8 @@ public final class GameServer {
         }
 
         String builtInCommand = commandScanner.next().trim().toLowerCase();
-        StringBuilder resultBuilder = new StringBuilder();
+
+        Location currentLocation = currentPlayer.getCurrentLocation();
 
         switch (builtInCommand) {
 
@@ -133,41 +133,78 @@ public final class GameServer {
                     return "You have nothing.";
                 }
 
-                resultBuilder.append("You are carrying: ");
+                StringBuilder invBuilder = new StringBuilder();
+
+                invBuilder.append("You are carrying: ");
                 for (String key : inventorySet) {
-                    resultBuilder.append(key);
-                    resultBuilder.append(", ");
+                    invBuilder.append(key);
+                    invBuilder.append(", ");
                 }
                 // delete the last comma and blank
-                resultBuilder.delete(resultBuilder.length() - 2, resultBuilder.length());
-                return resultBuilder.toString();
+                invBuilder.delete(invBuilder.length() - 2, invBuilder.length());
+                return invBuilder.toString();
 
             case "get":
                 if (!commandScanner.hasNext()) {
                     return "What do you want to get?";
                 }
-                String objectToGet = commandScanner.next().trim().toLowerCase();
 
-                // TODO: if player can get that thing, but it has been taken, should output "You already had that."
-                // TODO: player could get the artefact with "decorative" words
+                String objectToGet = null;
+
+//                String somethingToGet = commandScanner.nextLine().trim().toLowerCase();
+//                Pattern entityNamePattern = this.inputParser.getEntityNamePattern();
+//                for (String artefactName : currentLocation.getArtefacts().keySet()) {}
+
+                while (commandScanner.hasNext()) {
+                    String somethingToGet = commandScanner.next().trim().toLowerCase();
+
+                    if (objectToGet == null && currentPlayer.getInventory().containsKey(somethingToGet)) {
+                        return "You already had that.";
+                    }
+
+                    if (currentLocation.getArtefacts().containsKey(somethingToGet)) {
+                        if (objectToGet != null) {
+                            return "Which one do you want to get?";
+                        }
+
+                        objectToGet = somethingToGet;
+                    }
+                }
+
                 try {
-                    currentPlayer.addInventory(currentPlayer.getCurrentLocation().popArtefact(objectToGet));
-                    return "Taken";
+                    currentPlayer.pushInventory(currentLocation.popArtefact(objectToGet));
+                    return String.format("Taken: %s", objectToGet);
                 } catch (Exception e) {
                     return "You cannot get that thing.";
                 }
 
+            /* TODO:
+                Lucy:> drop potion, axe
+                Dropped: axe
+            */
             case "drop":
                 if (!commandScanner.hasNext()) {
                     return "What do you want to drop?";
                 }
-                String objectToDrop = commandScanner.next().trim().toLowerCase();
+
+                String objectToDrop = null;
+
+                while (commandScanner.hasNext()) {
+                    String somethingToDrop = commandScanner.next().trim().toLowerCase();
+
+                    if (currentPlayer.getInventory().containsKey(somethingToDrop)) {
+                        if (objectToDrop != null) {
+                            return "Which one do you want to drop?";
+                        }
+
+                        objectToDrop = somethingToDrop;
+                    }
+                }
 
                 try {
-                    currentPlayer.getCurrentLocation().addArtefact(objectToDrop, currentPlayer.popInventory(objectToDrop));
-                    return "Dropped";
+                    currentLocation.pushArtefact(currentPlayer.popInventory(objectToDrop));
+                    return String.format("Dropped: %s", objectToDrop);
                 } catch (Exception e) {
-                    // TODO: player now could drop things they don't have
                     return "You cannot drop that thing.";
                 }
 
