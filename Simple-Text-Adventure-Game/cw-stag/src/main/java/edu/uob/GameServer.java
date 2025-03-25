@@ -1,5 +1,12 @@
 package edu.uob;
 
+import edu.uob.action.GameAction;
+import edu.uob.entity.GameEntity;
+import edu.uob.entity.Location;
+import edu.uob.entity.Player;
+import edu.uob.parser.ActionParser;
+import edu.uob.parser.EntityParser;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,9 +15,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.*;
 
 public final class GameServer {
+
+    // my codes
+    private HashMap<String, Location> locationsHashMap;
+    private Location startLocation;
+    private Location storeroom;
+    private HashMap<String, GameEntity> entitiesHashMap;
+
+    private HashMap<String, Player> playersHashMap;
+    private int maxHealth;
+
+    private HashSet<GameAction> gameActions;
 
     private static final char END_OF_TRANSMISSION = 4;
 
@@ -30,6 +50,29 @@ public final class GameServer {
     */
     public GameServer(File entitiesFile, File actionsFile) {
         // TODO implement your server logic here
+        try {
+            EntityParser entityParser = new EntityParser(entitiesFile);
+            ActionParser actionParser = new ActionParser(actionsFile);
+
+            if (entityParser.getStoreroom() == null) {
+                if (!entityParser.genarateStoreroom()) {
+                    throw new RuntimeException("Failed to generate storeroom!");
+                }
+            }
+
+            this.locationsHashMap = entityParser.getLocationMap();
+            this.startLocation = entityParser.getStartLocation();
+            this.storeroom = entityParser.getStoreroom();
+            this.entitiesHashMap = entityParser.getEntityMap();
+            this.playersHashMap = new HashMap<>();
+            this.maxHealth = 3;
+            this.gameActions = actionParser.getGameActions();
+
+        } catch (Exception e) {
+            System.out.println("[ERROR] Failed to initialize game server: ");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -40,7 +83,170 @@ public final class GameServer {
     */
     public String handleCommand(String command) {
         // TODO implement your server logic here
-        return "";
+
+        // divide player name and actual command statement
+        /* Returns: the index of the first occurrence of the specified substring, or -1 if there is no such occurrence. */
+        int colonIndex = command.indexOf(":");
+        if (colonIndex == -1) {
+            throw new RuntimeException("Invalid command: no colon to split player name and command statement! ");
+        }
+        String playerName = command.substring(0, colonIndex).trim().toLowerCase();
+        String actualCommand = command.substring(colonIndex + 1).trim().toLowerCase();
+
+        if (!playersHashMap.containsKey(playerName)) {
+            Player newPlayer = new Player(playerName, this.maxHealth, this.startLocation);
+            this.playersHashMap.put(playerName, newPlayer);
+        }
+        Player currentPlayer = this.playersHashMap.get(playerName);
+
+        String result = processBuiltInCommand(currentPlayer, actualCommand);
+        if (result == null) {
+            result = processCustomAction(currentPlayer, actualCommand);
+        }
+
+        if (result == null) {
+            StringBuilder errorResult = new StringBuilder();
+            errorResult.append("Unknown command: ").append(actualCommand);
+            throw new RuntimeException(errorResult.toString());
+        }
+
+        return result;
+    }
+
+    // my codes
+
+    /** built-in commands: inventory / inv, get, drop, goto, look */
+    private String processBuiltInCommand(Player currentPlayer, String actualCommand) {
+        Scanner commandScanner = new Scanner(actualCommand);
+        if (!commandScanner.hasNext()) {
+            throw new RuntimeException("Cannot process void built-in command!");
+        }
+
+        String builtInCommand = commandScanner.next().trim().toLowerCase();
+        StringBuilder resultBuilder = new StringBuilder();
+
+        switch (builtInCommand) {
+
+            case "inventory", "inv":
+                Set<String> inventorySet = currentPlayer.getInventory().keySet();
+                if (inventorySet.isEmpty()) {
+                    return "You have nothing.";
+                }
+
+                resultBuilder.append("You are carrying: ");
+                for (String key : inventorySet) {
+                    resultBuilder.append(key);
+                    resultBuilder.append(", ");
+                }
+                // delete the last comma and blank
+                resultBuilder.delete(resultBuilder.length() - 2, resultBuilder.length());
+                return resultBuilder.toString();
+
+            case "get":
+                if (!commandScanner.hasNext()) {
+                    return "What do you want to get?";
+                }
+                String objectToGet = commandScanner.next().trim().toLowerCase();
+
+                // TODO: if player can get that thing, but it has been taken, should output "You already had that."
+                // TODO: player could get the artefact with "decorative" words
+                try {
+                    currentPlayer.addInventory(currentPlayer.getCurrentLocation().popArtefact(objectToGet));
+                    return "Taken";
+                } catch (Exception e) {
+                    return "You cannot get that thing.";
+                }
+
+            case "drop":
+                if (!commandScanner.hasNext()) {
+                    return "What do you want to drop?";
+                }
+                String objectToDrop = commandScanner.next().trim().toLowerCase();
+
+                try {
+                    currentPlayer.getCurrentLocation().addArtefact(objectToDrop, currentPlayer.popInventory(objectToDrop));
+                    return "Dropped";
+                } catch (Exception e) {
+                    // TODO: player now could drop things they don't have
+                    return "You cannot drop that thing.";
+                }
+
+            case "goto":
+                if (!commandScanner.hasNext()) {
+                    return "Where do you want to go?";
+                }
+                String placeToGo = commandScanner.next().trim().toLowerCase();
+
+                // check if there is a valid path from current location to target location
+                if (currentPlayer.getCurrentLocation().hasPath(placeToGo)) {
+                    // switch player's current location to the new location
+                    Location toLocation = this.locationsHashMap.get(placeToGo);
+                    currentPlayer.setCurrentLocation(toLocation);
+                    // display new location's description
+                    return printLocationDetails(toLocation);
+                }
+                // no way to the target location from current location
+                return "You cannot go to that location.";
+
+            case "look":
+                return printLocationDetails(currentPlayer.getCurrentLocation());
+
+            default:
+                return null;
+        }
+    }
+
+    private String printLocationDetails(Location currentLocation) {
+        StringBuilder details = new StringBuilder();
+        details.append("You are at: ");
+        details.append(currentLocation.getDescription());
+        details.append("\n");
+
+        if (!currentLocation.getPaths().isEmpty()) {
+            details.append("Paths: ");
+            for (String path : currentLocation.getPaths()) {
+                details.append(path);
+                details.append(", ");
+            }
+            // remove the last comma and blank, then add newline
+            details.replace(details.length() - 2, details.length(), "\n");
+        }
+
+        if (!currentLocation.getCharacters().isEmpty()) {
+            details.append("Characters: ");
+            details.append(printObjectsDetails(currentLocation.getCharacters()));
+        }
+
+        if (!currentLocation.getArtefacts().isEmpty()) {
+            details.append("Artefacts: ");
+            details.append(printObjectsDetails(currentLocation.getArtefacts()));
+        }
+
+        if (!currentLocation.getFurniture().isEmpty()) {
+            details.append("Furniture: ");
+            details.append(printObjectsDetails(currentLocation.getFurniture()));
+        }
+
+        // delete the newline at the end
+        details.delete(details.length() - 1, details.length());
+        return details.toString();
+    }
+
+    private String printObjectsDetails(HashMap<String, GameEntity> objectsMap) {
+        StringBuilder objectsDetails = new StringBuilder();
+        for (String objectName : objectsMap.keySet()) {
+            String characterDetail = objectsMap.get(objectName).getDescription();
+            objectsDetails.append(characterDetail);
+            objectsDetails.append(", ");
+        }
+        // remove the last comma and blank, then add newline
+        objectsDetails.replace(objectsDetails.length() - 2, objectsDetails.length(), "\n");
+        return objectsDetails.toString();
+    }
+
+    private String processCustomAction(Player currentPlayer, String actualCommand) {
+        // TODO: handle custom actions
+        return "TODO: DEVELOPING...";
     }
 
     /**

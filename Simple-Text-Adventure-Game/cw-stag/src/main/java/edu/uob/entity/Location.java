@@ -33,8 +33,23 @@ public class Location extends GameEntity{
         this.furniture.put(furnitureName, furniture);
     }
 
+    public GameEntity popArtefact(String artefactName) {
+        GameEntity artefactToPop = this.artefacts.get(artefactName);
+        // remove mapping, but not delete the GameEntity?
+        this.artefacts.remove(artefactName);
+        return artefactToPop;
+    }
+
+    public boolean hasPath(String toLocationName) {
+        return this.paths.contains(toLocationName);
+    }
+
     public HashSet<String> getPaths() {
         return this.paths;
+    }
+
+    public HashMap<String, GameEntity> getCharacters() {
+        return this.characters;
     }
 
     public HashMap<String, GameEntity> getArtefacts() {

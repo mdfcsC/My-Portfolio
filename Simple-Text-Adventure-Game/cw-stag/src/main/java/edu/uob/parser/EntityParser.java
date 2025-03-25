@@ -130,4 +130,14 @@ public class EntityParser {
     public HashMap<String, GameEntity> getEntityMap() {
         return this.entityMap;
     }
+
+    public boolean genarateStoreroom() {
+        if (this.storeroom != null) {
+            return false;
+        }
+        this.storeroom = new Location("storeroom", "A auto-generated storeroom for entities not placed in the game.");
+        this.locationMap.put("storeroom", this.storeroom);
+        this.entityMap.put("storeroom", this.storeroom);
+        return true;
+    }
 }
