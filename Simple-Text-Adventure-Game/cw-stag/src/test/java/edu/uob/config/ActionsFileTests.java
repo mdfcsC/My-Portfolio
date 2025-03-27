@@ -1,7 +1,7 @@
-package edu.uob;
+package edu.uob.config;
 
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
+
 import java.io.IOException;
 import java.io.File;
 import javax.xml.parsers.ParserConfigurationException;

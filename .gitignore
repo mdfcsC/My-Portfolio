@@ -12,6 +12,8 @@
 # VSCode files
 .vscode
 
+# 项目是多模块结构（如 Maven 多模块项目），需要忽略每个模块下的 target 目录
+**/target/
 
 # template: JAVA
 

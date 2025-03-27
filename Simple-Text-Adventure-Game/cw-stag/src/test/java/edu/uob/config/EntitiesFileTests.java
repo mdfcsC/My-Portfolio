@@ -1,4 +1,4 @@
-package edu.uob;
+package edu.uob.config;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;

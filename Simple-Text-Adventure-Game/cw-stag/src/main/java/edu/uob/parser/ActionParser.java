@@ -17,6 +17,8 @@ import java.util.LinkedHashSet;
 public class ActionParser {
     private LinkedHashSet<GameAction> gameActions; // use LinkedHashSet to maintain insertion order
 
+    private HashSet<String> allTriggers; // including all triggers' names in the actions.xml
+
     public ActionParser(File actionsFile) throws IOException, SAXException, ParserConfigurationException {
         this.gameActions = new LinkedHashSet<>();
 
@@ -30,6 +32,7 @@ public class ActionParser {
 
             Element triggersElement = (Element) action.getElementsByTagName("triggers").item(0);
             HashSet<String> triggers = parseActionProperty(triggersElement, "keyphrase");
+            this.allTriggers.addAll(triggers);
 
             Element subjectsElement = (Element) action.getElementsByTagName("subjects").item(0);
             HashSet<String> subjects = parseActionProperty(subjectsElement, "entity");
@@ -64,5 +67,9 @@ public class ActionParser {
 
     public HashSet<GameAction> getGameActions() {
         return this.gameActions;
+    }
+
+    public HashSet<String> getAllTriggers() {
+        return this.allTriggers;
     }
 }

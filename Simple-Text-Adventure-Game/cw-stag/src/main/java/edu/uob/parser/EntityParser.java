@@ -127,11 +127,12 @@ public class EntityParser {
         return this.storeroom;
     }
 
+    /** entityMap maps to all entities including locations */
     public HashMap<String, GameEntity> getEntityMap() {
         return this.entityMap;
     }
 
-    public boolean genarateStoreroom() {
+    public boolean generateStoreroom() {
         if (this.storeroom != null) {
             return false;
         }
