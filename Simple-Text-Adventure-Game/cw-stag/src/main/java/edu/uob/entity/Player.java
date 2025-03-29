@@ -19,7 +19,6 @@ public class Player extends GameEntity{
 
     public boolean damageHealth(int amount) {
         if (this.health <= 0 || amount <= 0 || amount > this.maxHealth) {
-            System.out.println("[ERROR] Player.damageHealth(): You don't have enough health to damage health!");
             return false;
         }
         this.health -= amount;
@@ -31,7 +30,6 @@ public class Player extends GameEntity{
 
     public boolean restoreHealth(int amount) {
         if (this.health <= 0 || amount <= 0 || amount > this.maxHealth) {
-            System.out.println("[ERROR] Player.restoreHealth(): You don't have enough capacity to restore so mush health!");
             return false;
         }
         this.health += amount;

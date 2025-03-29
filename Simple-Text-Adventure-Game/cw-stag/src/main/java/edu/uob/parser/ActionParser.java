@@ -11,13 +11,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.function.Supplier;
 
 public class ActionParser {
     private LinkedHashSet<GameAction> gameActions; // use LinkedHashSet to maintain insertion order
-
-    private HashSet<String> allTriggers; // including all triggers' names in the actions.xml
 
     public ActionParser(File actionsFile) throws IOException, SAXException, ParserConfigurationException {
         this.gameActions = new LinkedHashSet<>();
@@ -31,17 +32,16 @@ public class ActionParser {
             Element action = (Element) actions.item(i);
 
             Element triggersElement = (Element) action.getElementsByTagName("triggers").item(0);
-            HashSet<String> triggers = parseActionProperty(triggersElement, "keyphrase");
-            this.allTriggers.addAll(triggers);
+            HashSet<String> triggers = parseActionProperty(triggersElement, "keyphrase", HashSet::new);
 
             Element subjectsElement = (Element) action.getElementsByTagName("subjects").item(0);
-            HashSet<String> subjects = parseActionProperty(subjectsElement, "entity");
+            HashSet<String> subjects = parseActionProperty(subjectsElement, "entity", HashSet::new);
 
             Element consumedElement = (Element) action.getElementsByTagName("consumed").item(0);
-            HashSet<String> consumed = parseActionProperty(consumedElement, "entity");
+            LinkedList<String> consumed = parseActionProperty(consumedElement, "entity", LinkedList::new);
 
             Element producedElement = (Element) action.getElementsByTagName("produced").item(0);
-            HashSet<String> produced = parseActionProperty(producedElement, "entity");
+            LinkedList<String> produced = parseActionProperty(producedElement, "entity", LinkedList::new);
 
             String narration = action.getElementsByTagName("narration").item(0).getTextContent();
 
@@ -53,8 +53,8 @@ public class ActionParser {
     /** triggers --> keyphrase
      *  subjects / consumed / produced --> entity
      */
-    private HashSet<String> parseActionProperty(Element actionProperty, String childTagName) {
-        HashSet<String> childrenTextContent = new HashSet<>();
+    private <T extends Collection<String>> T parseActionProperty(Element actionProperty, String childTagName, Supplier<T> collectionFactory) {
+        T childrenTextContent = collectionFactory.get();
 
         NodeList children = actionProperty.getElementsByTagName(childTagName);
         for (int i = 0; i < children.getLength(); i++) {
@@ -67,9 +67,5 @@ public class ActionParser {
 
     public HashSet<GameAction> getGameActions() {
         return this.gameActions;
-    }
-
-    public HashSet<String> getAllTriggers() {
-        return this.allTriggers;
     }
 }

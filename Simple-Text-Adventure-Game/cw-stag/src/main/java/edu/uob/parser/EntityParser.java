@@ -19,8 +19,7 @@ public class EntityParser {
     private HashMap<String, Location> locationMap;
     private Location startLocation;
     private Location storeroom;
-    // map to all entities including locations
-    private HashMap<String, GameEntity> entityMap;
+    private HashMap<String, GameEntity> entityMap; // map to all entities including locations
 
     public EntityParser(File entitiesFile) throws FileNotFoundException, ParseException {
         this.locationMap = new HashMap<>();
@@ -96,8 +95,9 @@ public class EntityParser {
                         this.entityMap.put(entityName, entity);
                         break;
                     default:
-                        System.out.println("Unknown entity: " + entityGraphName);
-                        break;
+                        StringBuilder errorString = new StringBuilder();
+                        errorString.append("Unknown entity: ").append(entityName);
+                        throw new RuntimeException(errorString.toString());
                 }
             }
         }

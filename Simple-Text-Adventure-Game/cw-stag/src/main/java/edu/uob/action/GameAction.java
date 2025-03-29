@@ -1,15 +1,16 @@
 package edu.uob.action;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class GameAction {
     private HashSet<String> triggers;
     private HashSet<String> subjects;
-    private HashSet<String> consumed;
-    private HashSet<String> produced;
+    private LinkedList<String> consumed;
+    private LinkedList<String> produced;
     private String narration;
 
-    public GameAction(HashSet<String> triggers, HashSet<String> subjects, HashSet<String> consumed, HashSet<String> produced, String narration) {
+    public GameAction(HashSet<String> triggers, HashSet<String> subjects, LinkedList<String> consumed, LinkedList<String> produced, String narration) {
         this.triggers = triggers;
         this.subjects = subjects;
         this.consumed = consumed;
@@ -23,10 +24,10 @@ public class GameAction {
     public HashSet<String> getSubjects() {
         return this.subjects;
     }
-    public HashSet<String> getConsumed() {
+    public LinkedList<String> getConsumed() {
         return this.consumed;
     }
-    public HashSet<String> getProduced() {
+    public LinkedList<String> getProduced() {
         return this.produced;
     }
     public String getNarration() {

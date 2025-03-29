@@ -5,31 +5,36 @@ import edu.uob.action.GameAction;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InputParser {
-    private String input;
     private Pattern playerNamePattern;
     private String playerName;
-    private String normalCommand;
-    private LinkedHashSet<String> normalCommandWords;
+
+    private String normalCommand; // tokenised normalised actual command without player name
+    private LinkedHashSet<String> commandEntities;
     private String mainCommandVerb;
 
-    private HashSet<String> allTriggers;
+    private Set<String> gameEntitiesSet;
+    private HashSet<GameAction> gameActionsSet;
 
-    public InputParser(ActionParser actionParser) {
-        this.input = null;
+    public InputParser(EntityParser entityParser, ActionParser actionParser) {
         this.playerNamePattern = Pattern.compile("^[A-Za-z\\s'-]+$");
         this.playerName = null;
+
         this.normalCommand = null;
-        this.normalCommandWords = new LinkedHashSet<>();
+        this.commandEntities = new LinkedHashSet<>();
         this.mainCommandVerb = null;
-        this.allTriggers = actionParser.getAllTriggers();
+
+        this.gameEntitiesSet = entityParser.getEntityMap().keySet();
+        this.gameActionsSet = actionParser.getGameActions();
     }
 
     public void parseInput(String input) {
-        this.input = input;
+        // empty words set so it won't contain previous input words
+        this.commandEntities.clear();
 
         // divide player name and actual command statement
         int colonIndex = input.indexOf(":"); // Returns: the index of the first occurrence of the specified substring, or -1 if there is no such occurrence.
@@ -47,22 +52,15 @@ public class InputParser {
             compress multiple consecutive spaces into a single space
             remove opening and closing spaces
          */
-        this.normalCommand = actualCommand.replaceAll("\\p{Punct}&&[^']+", " ").replaceAll("\\s+", " ").trim();
+        this.normalCommand = actualCommand.replaceAll("[\\p{Punct}&&[^']]+", " ").replaceAll("\\s+", " ").trim();
         if (this.normalCommand.isEmpty()) {
             throw new RuntimeException("Empty normalCommand! Failed to normalise the actual command!");
         }
 
-        this.mainCommandVerb = findActionTrigger(this.normalCommand, this.allTriggers);
-        // if found valid action trigger, then remove it from the normalised actual command
-        String normalCommandWithoutVerb = this.normalCommand;
-        if (this.mainCommandVerb != null) {
-            StringBuilder regex = new StringBuilder();
-            regex.append("\\b").append(Pattern.quote(this.mainCommandVerb)).append("\\b");
-            Pattern verbPattern = Pattern.compile(regex.toString());
-            normalCommandWithoutVerb = verbPattern.matcher(this.normalCommand).replaceAll("");
-        }
+        // search if normalised actual command contains custom action trigger, null if not
+        this.mainCommandVerb = findActionTrigger();
 
-        Scanner scanner = new Scanner(normalCommandWithoutVerb);
+        Scanner scanner = new Scanner(this.normalCommand);
         while (scanner.hasNext()) {
             String nextWord = scanner.next().trim();
 
@@ -70,12 +68,12 @@ public class InputParser {
             if (this.mainCommandVerb != null && isBuiltInCommand(nextWord)) {
                 throw new RuntimeException("Multiple commands! You can only issue one command at a time!");
             }
-
             if (isBuiltInCommand(nextWord)) {
                 this.mainCommandVerb = nextWord;
-            } else {
-                // only add non-built-in command word
-                this.normalCommandWords.add(nextWord);
+            }
+
+            if (this.gameEntitiesSet.contains(nextWord)) {
+                this.commandEntities.add(nextWord);
             }
         }
         scanner.close();
@@ -83,27 +81,35 @@ public class InputParser {
         if (this.mainCommandVerb == null) {
             throw new RuntimeException("No valid command found! You cannot do that!");
         }
+
+        System.out.println("++++++++++");
+        System.out.println("Player name: " + this.playerName + "\nCommand verb: " + this.mainCommandVerb + "\nCommand entity words: " + this.commandEntities);
+        System.out.println("==========");
     }
 
-    private String findActionTrigger(String normalCommand, HashSet<String> allTriggers) {
+    private String findActionTrigger() {
         String mainCommandVerb = null;
         int verbCounter = 0;
 
         // check if input contains custom action trigger
-        for (String trigger : allTriggers) {
-            StringBuilder regex = new StringBuilder();
-            regex.append("\\b").append(Pattern.quote(trigger)).append("\\b");
-            Pattern triggerPattern = Pattern.compile(regex.toString());
-            Matcher triggerMatcher = triggerPattern.matcher(normalCommand);
-            if (triggerMatcher.find()) {
-                mainCommandVerb = triggerMatcher.group();
-                verbCounter++;
+        for (GameAction gameAction : this.gameActionsSet) {
+            for (String trigger : gameAction.getTriggers()) {
+                StringBuilder regex = new StringBuilder();
+                regex.append("\\b").append(Pattern.quote(trigger)).append("\\b");
+                Pattern triggerPattern = Pattern.compile(regex.toString());
+                Matcher triggerMatcher = triggerPattern.matcher(this.normalCommand);
+                if (triggerMatcher.find()) {
+                    mainCommandVerb = triggerMatcher.group();
+                    verbCounter++;
+                    // if found valid custom action trigger in this GameAction, mark and skip checking the rest of triggers in this GameAction (if there are)
+                    break;
+                }
             }
         }
 
         // ensure at most one custom action trigger
         if (verbCounter > 1) {
-            throw new RuntimeException("Multiple commands! You can only issue one command at a time!");
+            throw new RuntimeException("Multiple custom action commands! You can only issue one command at a time!");
         }
         return mainCommandVerb;
     }
@@ -120,9 +126,9 @@ public class InputParser {
         return this.playerName;
     }
 
-    /** tokenised normalised actual command words without player name, valid built-in commands and action triggers */
-    public LinkedHashSet<String> getNormalCommandWords() {
-        return this.normalCommandWords;
+    /** entities within entities.dot */
+    public LinkedHashSet<String> getCommandEntities() {
+        return this.commandEntities;
     }
 
     public String getMainCommandVerb() {

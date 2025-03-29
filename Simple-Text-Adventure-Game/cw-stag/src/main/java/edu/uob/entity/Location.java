@@ -22,6 +22,10 @@ public class Location extends GameEntity{
         this.paths.add(locationName);
     }
 
+    public void removePath(String locationName) {
+        this.paths.remove(locationName);
+    }
+
     public void addCharacter(String characterName, GameEntity character) {
         this.characters.put(characterName, character);
     }
@@ -32,18 +36,6 @@ public class Location extends GameEntity{
 
     public void addFurniture(String furnitureName, GameEntity furniture) {
         this.furniture.put(furnitureName, furniture);
-    }
-
-    // for game entity that already exists in the game system, just move between locations and player's inventory
-    public void pushArtefact(GameEntity artefact) {
-        this.artefacts.put(artefact.getName(), artefact);
-    }
-
-    public GameEntity popArtefact(String artefactName) {
-        GameEntity artefactToPop = this.artefacts.get(artefactName);
-        // remove mapping, but not delete the GameEntity?
-        this.artefacts.remove(artefactName);
-        return artefactToPop;
     }
 
     public boolean hasPath(String toLocationName) {
@@ -64,5 +56,37 @@ public class Location extends GameEntity{
 
     public HashMap<String, GameEntity> getFurniture() {
         return this.furniture;
+    }
+
+    // for artefact that already exists in the game system, just move between locations and player's inventory
+    public void pushArtefact(GameEntity artefact) {
+        this.artefacts.put(artefact.getName(), artefact);
+    }
+
+    public GameEntity popArtefact(String artefactName) {
+        GameEntity artefactToPop = this.artefacts.get(artefactName);
+        // remove mapping, but not delete the GameEntity?
+        this.artefacts.remove(artefactName);
+        return artefactToPop;
+    }
+
+    public void pushCharacter(GameEntity character) {
+        this.characters.put(character.getName(), character);
+    }
+
+    public GameEntity popCharacter(String characterName) {
+        GameEntity characterToPop = this.characters.get(characterName);
+        this.characters.remove(characterName);
+        return characterToPop;
+    }
+
+    public void pushFurniture(GameEntity furniture) {
+        this.furniture.put(furniture.getName(), furniture);
+    }
+
+    public GameEntity popFurniture(String furnitureName) {
+        GameEntity furnitureToPop = this.furniture.get(furnitureName);
+        this.furniture.remove(furnitureName);
+        return furnitureToPop;
     }
 }

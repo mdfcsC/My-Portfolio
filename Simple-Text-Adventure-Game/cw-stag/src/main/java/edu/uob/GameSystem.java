@@ -1,6 +1,7 @@
 package edu.uob;
 
 import edu.uob.action.GameAction;
+import edu.uob.entity.EntityType;
 import edu.uob.entity.GameEntity;
 import edu.uob.entity.Location;
 import edu.uob.entity.Player;
@@ -9,7 +10,6 @@ import edu.uob.parser.EntityParser;
 import edu.uob.parser.InputParser;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class GameSystem {
     private HashMap<String, Location> locationsHashMap;
@@ -33,13 +33,14 @@ public class GameSystem {
         this.playersHashMap = new HashMap<>();
         this.maxHealth = 3;
         this.gameActions = actionParser.getGameActions();
-        this.inputParser = new InputParser(actionParser);
+        this.inputParser = new InputParser(entityParser, actionParser);
     }
 
     public String handleInput(String input) {
         this.inputParser.parseInput(input);
+
         String playerName = this.inputParser.getPlayerName();
-        LinkedHashSet<String> normalCommandWords = this.inputParser.getNormalCommandWords();
+        LinkedHashSet<String> commandEntities = this.inputParser.getCommandEntities();
         String mainCommandVerb = this.inputParser.getMainCommandVerb();
 
         // check if the player name exists
@@ -52,22 +53,21 @@ public class GameSystem {
         Location currentLocation = currentPlayer.getCurrentLocation();
 
         String result = switch (mainCommandVerb) {
-            case "inventory", "inv" -> executeInventoryCommand(normalCommandWords, currentPlayer);
-            case "get" -> executeGetCommand(normalCommandWords, currentPlayer, currentLocation);
-            case "drop" -> executeDropCommand(normalCommandWords, currentPlayer, currentLocation);
-            case "goto" -> executeGotoCommand(normalCommandWords, currentPlayer);
-            case "look" -> executeLookCommand(normalCommandWords, currentLocation);
-            default -> executeCustomAction(normalCommandWords, currentPlayer, currentLocation, mainCommandVerb);
+            case "inventory", "inv" -> executeInventoryCommand(currentPlayer);
+            case "get" -> executeGetCommand(commandEntities, currentPlayer, currentLocation);
+            case "drop" -> executeDropCommand(commandEntities, currentPlayer, currentLocation);
+            case "goto" -> executeGotoCommand(commandEntities, currentPlayer);
+            case "look" -> showLocationDetails(currentLocation);
+            default -> executeCustomAction(commandEntities, currentPlayer, currentLocation, mainCommandVerb);
         };
 
-        // process normalised actual command, check if it is a built-in command or a custom action
         if (result == null) {
-            throw new RuntimeException(String.format("Unknown command: %s", normalCommandWords.toString()));
+            throw new RuntimeException(String.format("For command verb: \"%s\", cannot find the command entity: %s", mainCommandVerb, commandEntities));
         }
         return result;
     }
 
-    private String executeInventoryCommand(LinkedHashSet<String> normalCommandWords, Player currentPlayer) {
+    private String executeInventoryCommand(Player currentPlayer) {
         Set<String> inventorySet = currentPlayer.getInventory().keySet();
         if (inventorySet.isEmpty()) {
             return "You have nothing.";
@@ -85,29 +85,19 @@ public class GameSystem {
         return invBuilder.toString();
     }
 
-    private String executeGetCommand(LinkedHashSet<String> normalCommandWords, Player currentPlayer, Location currentLocation) {
-        if (normalCommandWords.isEmpty()) {
+    private String executeGetCommand(LinkedHashSet<String> commandEntities, Player currentPlayer, Location currentLocation) {
+        String objectToGet = null;
+
+        if (commandEntities.size() == 1) {
+            objectToGet = commandEntities.iterator().next();
+        } else if (commandEntities.size() > 1) {
+            return "You can only get one thing at a time.";
+        } else {
             return "What do you want to get?";
         }
 
-        String objectToGet = null;
-
-        for (String word : normalCommandWords) {
-            if (objectToGet == null && currentPlayer.getInventory().containsKey(word)) {
-                return "You already had that.";
-            }
-
-            if (objectToGet != null && this.entitiesHashMap.containsKey(word)) {
-                return "You can only get artefacts.";
-            }
-
-            if (currentLocation.getArtefacts().containsKey(word)) {
-                if (objectToGet != null) {
-                    return "Which one do you want to get?";
-                }
-
-                objectToGet = word;
-            }
+        if (currentPlayer.getInventory().containsKey(objectToGet)) {
+            return "You already had that.";
         }
 
         try {
@@ -118,23 +108,15 @@ public class GameSystem {
         }
     }
 
-    private String executeDropCommand(LinkedHashSet<String> normalCommandWords, Player currentPlayer, Location currentLocation) {
-        if (normalCommandWords.isEmpty()) {
-            return "What do you want to drop?";
-        }
-
+    private String executeDropCommand(LinkedHashSet<String> commandEntities, Player currentPlayer, Location currentLocation) {
         String objectToDrop = null;
-        for (String word : normalCommandWords) {
-            if (objectToDrop != null && this.entitiesHashMap.containsKey(word)) {
-                return "You can only drop artefacts.";
-            }
 
-            if (currentPlayer.getInventory().containsKey(word)) {
-                if (objectToDrop != null) {
-                    return "Which one do you want to drop?";
-                }
-                objectToDrop = word;
-            }
+        if (commandEntities.size() == 1) {
+            objectToDrop = commandEntities.iterator().next();
+        } else if (commandEntities.size() > 1) {
+            return "You can only drop one thing at a time.";
+        } else {
+            return "What do you want to drop?";
         }
 
         try {
@@ -145,16 +127,21 @@ public class GameSystem {
         }
     }
 
-    private String executeGotoCommand(LinkedHashSet<String> normalCommandWords, Player currentPlayer) {
-        if (normalCommandWords.isEmpty()) {
+    private String executeGotoCommand(LinkedHashSet<String> commandEntities, Player currentPlayer) {
+        if (commandEntities.isEmpty()) {
             return "Where do you want to go?";
         }
 
         Location toLocation = null;
 
-        for (String word : normalCommandWords) {
-            if (toLocation != null && this.entitiesHashMap.containsKey(word)) {
-                return "You can only go to somewhere.";
+        for (String word : commandEntities) {
+            if (toLocation != null) {
+                if (this.locationsHashMap.containsKey(word)) {
+                    return "You can only go to one place at a time.";
+                }
+                if (this.entitiesHashMap.containsKey(word)) {
+                    return "You can only go to somewhere.";
+                }
             }
 
             // check if there is a valid path from current location to target location
@@ -162,20 +149,18 @@ public class GameSystem {
                 if (toLocation != null) {
                     return "Which place do you want to go?";
                 }
-                // switch player's current location to the new location
+
                 toLocation = this.locationsHashMap.get(word);
-                currentPlayer.setCurrentLocation(toLocation);
             }
         }
         if (toLocation == null) {
-            return "You cannot go to that location.";
+            return "You cannot go to that place.";
         }
+
+        // switch player's current location to the new location
+        currentPlayer.setCurrentLocation(toLocation);
         // display new location's description
         return showLocationDetails(toLocation);
-    }
-
-    private String executeLookCommand(LinkedHashSet<String> normalCommandWords, Location currentLocation) {
-        return showLocationDetails(currentLocation);
     }
 
     private String showLocationDetails(Location currentLocation) {
@@ -226,8 +211,8 @@ public class GameSystem {
         return objectsDetails.toString();
     }
 
-    private String executeCustomAction(LinkedHashSet<String> normalCommandWords, Player currentPlayer, Location currentLocation, String mainCommandVerb) {
-        if (normalCommandWords.isEmpty()) {
+    private String executeCustomAction(LinkedHashSet<String> commandEntities, Player currentPlayer, Location currentLocation, String mainCommandVerb) {
+        if (commandEntities.isEmpty()) {
             return String.format("What exactly do you want to %s?", mainCommandVerb);
         }
 
@@ -240,14 +225,25 @@ public class GameSystem {
             }
         }
 
-        for (String word : normalCommandWords) {
+        for (String commandEntity : commandEntities) {
+            boolean extraneousEntity = true;
+
             for (GameAction relatedAction : relatedActions) {
-                if (relatedAction.getSubjects().contains(word)) {
-                    if (commandAction != null) {
-                        return String.format("Which subject do you want to %s?", mainCommandVerb);
+                if (relatedAction.getSubjects().contains(commandEntity)) {
+                    extraneousEntity = false;
+
+                    // case that multiple subjects but all are in one same action
+                    if (commandAction == relatedAction) {
+                        break;
                     }
+
                     commandAction = relatedAction;
+                    // if found valid custom action subject in this GameAction, mark and skip checking the rest of subjects in this GameAction (if there are)
+                    break;
                 }
+            }
+            if (extraneousEntity) {
+                return String.format("Extraneous entity %s for trigger %s", commandEntity, mainCommandVerb);
             }
         }
 
@@ -255,47 +251,96 @@ public class GameSystem {
             return String.format("You cannot %s that thing.", mainCommandVerb);
         }
 
+        // check if this action is available for player
+        HashSet<String> actionSubjects = commandAction.getSubjects();
+        for (String actionSubject : actionSubjects) {
+            boolean currentSubjectAvailable = false;
+            EntityType subjectType = this.entitiesHashMap.get(actionSubject).getType();
+            switch (subjectType) {
+                case LOCATION:
+                    currentSubjectAvailable = currentLocation.hasPath(actionSubject);
+                    break;
+                case CHARACTER:
+                    currentSubjectAvailable = currentLocation.getCharacters().containsKey(actionSubject);
+                    break;
+                case ARTEFACT:
+                    currentSubjectAvailable = currentPlayer.getInventory().containsKey(actionSubject) || currentLocation.getArtefacts().containsKey(actionSubject);
+                    break;
+                case FURNITURE:
+                    currentSubjectAvailable = currentLocation.getFurniture().containsKey(actionSubject);
+                    break;
+                default:
+                    return String.format("Cannot tell the action subject: %s", actionSubject);
+            }
+
+            // if any subject is unavailable, this action is unavailable
+            if (!currentSubjectAvailable) {
+                return String.format("You are unable to %s here.", mainCommandVerb);
+            }
+        }
+
         // consume execution
         for (String objectToConsume : commandAction.getConsumed()) {
-            if (currentPlayer.getInventory().containsKey(objectToConsume)) {
-                this.storeroom.pushArtefact(currentPlayer.popInventory(objectToConsume));
-            }
             if (objectToConsume.equals("health")) {
-                currentPlayer.damageHealth(1);
+                if (currentPlayer.damageHealth(1)) {
+                    break;
+                } else {
+                    throw new RuntimeException("GameSystem: Player.damageHealth(): You don't have enough health to reduce!");
+                }
             }
-            if (currentLocation.getArtefacts().containsKey(objectToConsume)) {
-                this.storeroom.pushArtefact(currentLocation.popArtefact(objectToConsume));
-            }
-            if (currentLocation.getFurniture().containsKey(objectToConsume)) {
-                this.storeroom.pushFurniture(currentLocation.popFurniture(objectToConsume));
-            }
-            if (currentLocation.getCharacters().containsKey(objectToConsume)) {
-                this.storeroom.pushCharacter(currentLocation.popCharacter(objectToConsume));
-            }
-            if (this.locationsHashMap.containsKey(objectToConsume)) {
-                currentLocation.removePath(objectToConsume);
+
+            EntityType entityType = this.entitiesHashMap.get(objectToConsume).getType();
+            switch (entityType) {
+                case LOCATION:
+                    currentLocation.removePath(objectToConsume);
+                    break;
+                case CHARACTER:
+                    this.storeroom.pushCharacter(currentLocation.popCharacter(objectToConsume));
+                    break;
+                case ARTEFACT:
+                    if (currentPlayer.getInventory().containsKey(objectToConsume)) {
+                        this.storeroom.pushArtefact(currentPlayer.popInventory(objectToConsume));
+                        break;
+                    } else if (currentLocation.getArtefacts().containsKey(objectToConsume)) {
+                        this.storeroom.pushArtefact(currentLocation.popArtefact(objectToConsume));
+                        break;
+                    } else {
+                        return String.format("Cannot consume \"%s\" here.", objectToConsume);
+                    }
+                case FURNITURE:
+                    this.storeroom.pushFurniture(currentLocation.popFurniture(objectToConsume));
+                    break;
+                default:
+                    return String.format("Cannot consume this entity type. What is \"%s\"?", objectToConsume);
             }
         }
 
         // produce execution
         for (String objectToProduce : commandAction.getProduced()) {
-            if (currentLocation.getArtefacts().containsKey(objectToProduce)) {
-                currentPlayer.pushInventory(currentLocation.popArtefact(objectToProduce));
-            }
             if (objectToProduce.equals("health")) {
-                currentPlayer.restoreHealth(1);
+                if (currentPlayer.restoreHealth(1)) {
+                    break;
+                } else {
+                    throw new RuntimeException("GameSystem: Player.restoreHealth(): You don't have enough capacity to restore so mush health!");
+                }
             }
-            if (this.storeroom.getArtefacts().containsKey(objectToProduce)) {
-                currentPlayer.pushInventory(this.storeroom.popArtefact(objectToProduce));
-            }
-            if (this.storeroom.getFurniture().containsKey(objectToProduce)) {
-                currentLocation.pushFurniture(this.storeroom.popFurniture(objectToProduce));
-            }
-            if (this.storeroom.getCharacters().containsKey(objectToProduce)) {
-                currentLocation.pushCharacter(this.storeroom.popCharacter(objectToProduce));
-            }
-            if (this.locationsHashMap.containsKey(objectToProduce)) {
-                currentLocation.addPath(objectToProduce);
+
+            EntityType entityType = this.entitiesHashMap.get(objectToProduce).getType();
+            switch (entityType) {
+                case LOCATION:
+                    currentLocation.addPath(objectToProduce);
+                    break;
+                case CHARACTER:
+                    currentLocation.pushCharacter(this.storeroom.popCharacter(objectToProduce));
+                    break;
+                case ARTEFACT:
+                    currentLocation.pushArtefact(this.storeroom.popArtefact(objectToProduce));
+                    break;
+                case FURNITURE:
+                    currentLocation.pushFurniture(this.storeroom.popFurniture(objectToProduce));
+                    break;
+                default:
+                    return String.format("Cannot produce this entity type. What is \"%s\"?", objectToProduce);
             }
         }
 

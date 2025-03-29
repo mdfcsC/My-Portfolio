@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 public final class GameServer {
 
     // my codes
-    private GameSystem gameState;
+    private GameSystem gameSystem;
 
     private static final char END_OF_TRANSMISSION = 4;
 
@@ -46,12 +46,13 @@ public final class GameServer {
                 }
             }
 
-            this.gameState = new GameSystem(entityParser, actionParser);
+            this.gameSystem = new GameSystem(entityParser, actionParser);
 
         } catch (Exception e) {
-            System.out.println("[ERROR] Failed to initialize game server: ");
-            System.out.println(e.getMessage());
+            StringBuilder errorString = new StringBuilder();
+            errorString.append("[ERROR] Failed to initialize game server: ").append(e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException(errorString.toString());
         }
     }
 
@@ -64,7 +65,7 @@ public final class GameServer {
     public String handleCommand(String command) {
         // TODO implement your server logic here
         try {
-            return this.gameState.handleInput(command);
+            return this.gameSystem.handleInput(command);
         } catch (Exception e) {
             return String.format("[ERROR] Failed to handle command: \n%s", e.getMessage());
         }
