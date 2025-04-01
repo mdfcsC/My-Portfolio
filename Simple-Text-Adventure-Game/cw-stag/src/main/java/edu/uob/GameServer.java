@@ -84,8 +84,15 @@ public final class GameServer {
             LinkedHashSet<String> commandEntities = this.inputParser.getCommandEntities();
             String mainCommandVerb = this.inputParser.getMainCommandVerb();
 
-            // check if the player name exists
-            if (!this.gameState.getPlayersHashMap().containsKey(playerName)) {
+            // check if the player name exists, case-insensitive when searching
+            boolean existingPlayer = false;
+            for (String existingName : this.gameState.getPlayersHashMap().keySet()) {
+                if (playerName.equalsIgnoreCase(existingName)) {
+                    existingPlayer = true;
+                    break;
+                }
+            }
+            if (!existingPlayer) {
                 this.gameState.addNewPlayer(playerName);
             }
 

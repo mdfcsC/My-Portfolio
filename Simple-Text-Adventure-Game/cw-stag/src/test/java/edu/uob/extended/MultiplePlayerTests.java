@@ -55,7 +55,7 @@ public class MultiplePlayerTests {
         assertTrue(response.contains("Amy"), "Player should see other player in the same place");
         assertFalse(response.contains("David"), "Player should not see herself");
 
-        assertFalse(response.contains("lucy"), "Player name should be case-sensitive");
+        assertFalse(response.contains("lucy"), "Player name should keep its case");
 
         sendCommandToServer("Amy: goto forest");
         response = sendCommandToServer("Amy: look");
@@ -88,5 +88,30 @@ public class MultiplePlayerTests {
         assertTrue(response.contains("Taken"), "Player can get something which not produced by herself");
         response = sendCommandToServer("Amy: get log");
         assertTrue(response.contains("You cannot get that thing."), "Player cannot get the artefact taken by another player");
+    }
+
+    @Test
+    void testPlayerNameCase() {
+        sendCommandToServer("Lucy: look");
+        sendCommandToServer("Amy: look");
+        sendCommandToServer("amy: look");
+
+        String response = sendCommandToServer("Lucy: look");
+        assertFalse(response.contains("amy"), "Existing player name searching should be case-insensitive");
+    }
+
+    @Test
+    void testPlayerNameRule() {
+        sendCommandToServer("Lucy: look");
+        sendCommandToServer("    sutter's  -Mill :look");
+
+        String response = sendCommandToServer("Lucy: look");
+        assertTrue(response.contains("sutter's  -Mill"), "Valid player names can consist of uppercase and lowercase letters, spaces, apostrophes and hyphens.");
+
+        response = sendCommandToServer("23333: look");
+        assertTrue(response.contains("ERROR"), "Invalid player name should return an error message to the user");
+
+        response = sendCommandToServer("stick season; love vermont");
+        assertTrue(response.contains("ERROR"), "Should have colon between player name and actual command");
     }
 }
