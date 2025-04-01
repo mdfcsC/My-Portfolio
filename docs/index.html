@@ -5,10 +5,14 @@
   </head>
   <body>
     <h1>Welcome to my "published work"!</h1>
-    <h2> First game, <a id="minsweeperLink">Minesweeper (My Version)</a> </h2>
+    <h2>First game, <a id="minsweeperLink">Minesweeper (My Version)</a> </h2>
     <div>
         <p>Best played in a real web browser, 'cause that's the only place I tested it.</p>
         <p>See the <a href="https://github.com/mdfcsC/My-Portfolio/blob/main/README.md#minesweeper">README.md</a> in my GitHub repo for more details, if you have access.</p>
+    </div>
+    <h2>A birthday gift for my friend</h2>
+    <div>
+      <p>With assistance of Claude and Cursor, <a id="jingBirthdayGiftLink">a web page</a> modified based on someone else's codes and design.</p>
     </div>
   </body>
   <footer>
@@ -21,5 +25,6 @@
   <script>
     var timestamp = new Date().getTime();
     document.getElementById('minsweeperLink').href = 'minesweeper/minesweeper.html?v=' + timestamp;
+    document.getElementById('jingBirthdayGiftLink').href = 'BirthdayGift-Jing/index.html?v=' + timestamp;
   </script>
 </html>
