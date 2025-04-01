@@ -1,7 +1,12 @@
 package edu.uob;
 
+import edu.uob.entity.Location;
+import edu.uob.entity.Player;
+import edu.uob.executor.BuiltInExecutor;
+import edu.uob.executor.CustomExecutor;
 import edu.uob.parser.ActionParser;
 import edu.uob.parser.EntityParser;
+import edu.uob.parser.InputParser;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,17 +17,24 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 
 public final class GameServer {
 
     // my codes
-    private GameSystem gameSystem;
+    private GameState gameState;
+    private InputParser inputParser;
 
     private static final char END_OF_TRANSMISSION = 4;
 
     public static void main(String[] args) throws IOException {
-        File entitiesFile = Paths.get("config" + File.separator + "basic-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config" + File.separator + "basic-actions.xml").toAbsolutePath().toFile();
+        StringBuilder entitiesFilePath = new StringBuilder();
+        StringBuilder actionsFilePath = new StringBuilder();
+        entitiesFilePath.append("config").append(File.separator).append("basic-entities.dot");
+        actionsFilePath.append("config").append(File.separator).append("basic-actions.xml");
+
+        File entitiesFile = Paths.get(entitiesFilePath.toString()).toAbsolutePath().toFile();
+        File actionsFile = Paths.get(actionsFilePath.toString()).toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
         server.blockingListenOn(8888);
     }
@@ -35,7 +47,7 @@ public final class GameServer {
     * @param actionsFile The game configuration file containing all game actions to use in your game
     */
     public GameServer(File entitiesFile, File actionsFile) {
-        // TODO implement your server logic here
+        // Implement your server logic here
         try {
             EntityParser entityParser = new EntityParser(entitiesFile);
             ActionParser actionParser = new ActionParser(actionsFile);
@@ -46,7 +58,8 @@ public final class GameServer {
                 }
             }
 
-            this.gameSystem = new GameSystem(entityParser, actionParser);
+            this.gameState = new GameState(entityParser, actionParser);
+            this.inputParser = new InputParser(this.gameState);
 
         } catch (Exception e) {
             StringBuilder errorString = new StringBuilder();
@@ -63,9 +76,44 @@ public final class GameServer {
     * @param command The incoming command to be processed
     */
     public String handleCommand(String command) {
-        // TODO implement your server logic here
+        // Implement your server logic here
         try {
-            return this.gameSystem.handleInput(command);
+            this.inputParser.parseInput(command);
+
+            String playerName = this.inputParser.getPlayerName();
+            LinkedHashSet<String> commandEntities = this.inputParser.getCommandEntities();
+            String mainCommandVerb = this.inputParser.getMainCommandVerb();
+
+            // check if the player name exists
+            if (!this.gameState.getPlayersHashMap().containsKey(playerName)) {
+                this.gameState.addNewPlayer(playerName);
+            }
+
+            Player currentPlayer = this.gameState.getPlayersHashMap().get(playerName);
+            Location currentLocation = currentPlayer.getCurrentLocation();
+
+            String result = switch (mainCommandVerb) {
+                case "inventory", "inv":
+                    yield new BuiltInExecutor(this.gameState).executeInventory(currentPlayer);
+                case "get":
+                    yield new BuiltInExecutor(this.gameState).executeGet(commandEntities, currentPlayer, currentLocation);
+                case "drop":
+                    yield new BuiltInExecutor(this.gameState).executeDrop(commandEntities, currentPlayer, currentLocation);
+                case "goto":
+                    yield new BuiltInExecutor(this.gameState).executeGoto(commandEntities, currentPlayer);
+                case "look":
+                    yield new BuiltInExecutor(this.gameState).executeLook(currentPlayer.getName(), currentLocation);
+                case "health":
+                    yield new BuiltInExecutor(this.gameState).executeHealth(currentPlayer);
+                default:
+                    yield new CustomExecutor(this.gameState).executeAction(commandEntities, currentPlayer, currentLocation, mainCommandVerb);
+            };
+
+            if (result == null) {
+                throw new RuntimeException(String.format("For command verb: \"%s\", cannot find the command entity: %s", mainCommandVerb, commandEntities));
+            }
+            return result;
+
         } catch (Exception e) {
             return String.format("[ERROR] Failed to handle command: \n%s", e.getMessage());
         }
@@ -80,10 +128,10 @@ public final class GameServer {
     */
     public void blockingListenOn(int portNumber) throws IOException {
         try (ServerSocket s = new ServerSocket(portNumber)) {
-            System.out.println("Server listening on port " + portNumber);
+            System.out.printf("Server listening on port %d\n", portNumber);
             while (!Thread.interrupted()) {
                 try {
-                    blockingHandleConnection(s);
+                    this.blockingHandleConnection(s);
                 } catch (IOException e) {
                     System.out.println("Connection closed");
                 }
@@ -105,10 +153,10 @@ public final class GameServer {
             System.out.println("Connection established");
             String incomingCommand = reader.readLine();
             if(incomingCommand != null) {
-                System.out.println("Received message from " + incomingCommand);
-                String result = handleCommand(incomingCommand);
+                System.out.printf("Received message from %s\n", incomingCommand);
+                String result = this.handleCommand(incomingCommand);
                 writer.write(result);
-                writer.write("\n" + END_OF_TRANSMISSION + "\n");
+                writer.write(String.format("\n%c\n", END_OF_TRANSMISSION));
                 writer.flush();
             }
         }
