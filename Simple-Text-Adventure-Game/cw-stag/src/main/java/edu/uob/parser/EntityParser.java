@@ -35,12 +35,12 @@ public class EntityParser {
 
         // The locations will always be in the first subgraph
         List<Graph> locationsGraphs = sections.get(0).getSubgraphs();
-        parseLocationsGraphs(locationsGraphs);
+        this.parseLocationsGraphs(locationsGraphs);
 
         // The paths will always be in the second subgraph
         // The paths between locations are presented in the form of directed "arrows" (what Computer Scientists call 'edges').
         List<Edge> paths = sections.get(1).getEdges();
-        parsePaths(paths);
+        this.parsePaths(paths);
     }
 
     private void parseLocationsGraphs(List<Graph> locationsGraphs) {
@@ -53,6 +53,7 @@ public class EntityParser {
             this.locationMap.put(locationName, location);
             this.entityMap.put(locationName, location); // entityMap contains all mapping including locations
 
+            // The start location will always be the first location that appears in the entities file.
             if (this.startLocation == null) {
                 this.startLocation = location;
             }
@@ -62,7 +63,7 @@ public class EntityParser {
 
             // Extract sub-graphs in this location graph
             List<Graph> nonLocationGraphs = locationGraph.getSubgraphs();
-            parseEntitiesInLocation(nonLocationGraphs, location);
+            this.parseEntitiesInLocation(nonLocationGraphs, location);
         }
     }
 

@@ -1,0 +1,370 @@
+====================================================
+       Illegal Constructs Check Report - 2025-04-01 01:38:15
+====================================================
+
+Starting to check all Java source files...
+
+Checking file: src/main/java/edu/uob/GameServer.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/GameServer.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.220 s
+[INFO] Finished at: 2025-04-01T01:38:16+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/GameEntity.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/GameEntity.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.152 s
+[INFO] Finished at: 2025-04-01T01:38:17+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/Furniture.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/Furniture.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.143 s
+[INFO] Finished at: 2025-04-01T01:38:18+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/EntityType.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/EntityType.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.143 s
+[INFO] Finished at: 2025-04-01T01:38:18+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/Artefact.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/Artefact.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.142 s
+[INFO] Finished at: 2025-04-01T01:38:19+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/Character.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/Character.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.141 s
+[INFO] Finished at: 2025-04-01T01:38:20+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/Player.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/Player.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.146 s
+[INFO] Finished at: 2025-04-01T01:38:20+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/Location.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/Location.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.146 s
+[INFO] Finished at: 2025-04-01T01:38:21+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/entity/package-info.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/entity/package-info.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.145 s
+[INFO] Finished at: 2025-04-01T01:38:22+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/parser/EntityParser.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/parser/EntityParser.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.146 s
+[INFO] Finished at: 2025-04-01T01:38:22+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/parser/ActionParser.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/parser/ActionParser.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.144 s
+[INFO] Finished at: 2025-04-01T01:38:23+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/parser/InputParser.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/parser/InputParser.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.146 s
+[INFO] Finished at: 2025-04-01T01:38:24+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/action/GameAction.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/action/GameAction.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.152 s
+[INFO] Finished at: 2025-04-01T01:38:25+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/action/package-info.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/action/package-info.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.146 s
+[INFO] Finished at: 2025-04-01T01:38:25+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/executor/BuiltInExecutor.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/executor/BuiltInExecutor.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.150 s
+[INFO] Finished at: 2025-04-01T01:38:26+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/executor/CommandExecutor.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/executor/CommandExecutor.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.145 s
+[INFO] Finished at: 2025-04-01T01:38:27+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/executor/CustomExecutor.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/executor/CustomExecutor.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.145 s
+[INFO] Finished at: 2025-04-01T01:38:27+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/GameState.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/GameState.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.145 s
+[INFO] Finished at: 2025-04-01T01:38:28+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+Checking file: src/main/java/edu/uob/GameClient.java
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------------< edu.uob:cw-stag >---------------------------
+[INFO] Building cw-stag 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- exec-maven-plugin:3.0.0:java (strange) @ cw-stag ---
+[INFO] ------------------------------------------------------------------------
+[INFO] Looking for illegal constructs in src/main/java/edu/uob/GameClient.java...
+[INFO] ------------------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.145 s
+[INFO] Finished at: 2025-04-01T01:38:29+01:00
+[INFO] ------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++
+
+Check completed! Examined 19 files, found problems in 0 files.
+Check time: 2025-04-01 01:38:15
