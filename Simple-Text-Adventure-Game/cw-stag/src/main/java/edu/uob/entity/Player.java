@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Player extends GameEntity{
     private int maxHealth;
     private int health;
-    // TODO: is it really a good idea to use HashMap rather than HashSet?
+    // is it really a good idea to use HashMap rather than HashSet?
     private HashMap<String, GameEntity> inventory;
     private Location currentLocation;
 

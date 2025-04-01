@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 public class Location extends GameEntity{
     private HashSet<String> paths; // a way to another location
-    // TODO: is it really a good idea to use HashMap rather than HashSet?
+    // is it really a good idea to use HashMap rather than HashSet?
     private HashMap<String, GameEntity> characters;
     private HashMap<String, GameEntity> artefacts;
     private HashMap<String, GameEntity> furniture;
