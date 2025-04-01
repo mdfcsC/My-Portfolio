@@ -317,38 +317,53 @@ fetchData();
 // 音乐控制
 const musicToggle = document.getElementById('musicToggle');
 const bgMusic = document.getElementById('bgMusic');
-let isMusicPlaying = false;
+let isMuted = true; // 默认静音状态
+let hasStartedPlaying = false; // 标记是否已经开始播放
 
 // 添加音频错误处理
 bgMusic.addEventListener('error', (e) => {
   console.error('音频加载错误:', e);
+  musicToggle.style.display = 'none'; // 如果加载失败，隐藏音乐控制按钮
   alert('音频文件加载失败，请检查文件路径是否正确');
 });
 
 // 添加音频加载成功处理
 bgMusic.addEventListener('canplaythrough', () => {
   console.log('音频加载成功，可以播放');
+  musicToggle.style.display = 'flex'; // 加载成功后显示音乐控制按钮
 });
 
+// 修改点击事件处理
 musicToggle.addEventListener('click', () => {
-  if (isMusicPlaying) {
-    bgMusic.volume = 0;
-    musicToggle.querySelector('i').classList.remove('fa-volume-up');
-    musicToggle.querySelector('i').classList.add('fa-volume-mute');
-    musicToggle.classList.remove('playing');
+  if (!hasStartedPlaying) {
+    // 第一次点击时开始播放
+    bgMusic.play().then(() => {
+      hasStartedPlaying = true;
+      bgMusic.volume = 0.5;
+      musicToggle.querySelector('i').classList.remove('fa-volume-mute');
+      musicToggle.querySelector('i').classList.add('fa-volume-up');
+      musicToggle.classList.add('playing');
+      isMuted = false;
+    }).catch(error => {
+      console.error('播放失败:', error);
+      alert('由于浏览器策略，需要用户交互才能播放音乐。请点击音乐按钮重试。');
+    });
   } else {
-    bgMusic.volume = 0.5;
-    musicToggle.querySelector('i').classList.remove('fa-volume-mute');
-    musicToggle.querySelector('i').classList.add('fa-volume-up');
-    musicToggle.classList.add('playing');
+    // 后续点击只控制音量
+    if (isMuted) {
+      bgMusic.volume = 0.5;
+      musicToggle.querySelector('i').classList.remove('fa-volume-mute');
+      musicToggle.querySelector('i').classList.add('fa-volume-up');
+      musicToggle.classList.add('playing');
+    } else {
+      bgMusic.volume = 0;
+      musicToggle.querySelector('i').classList.remove('fa-volume-up');
+      musicToggle.querySelector('i').classList.add('fa-volume-mute');
+      musicToggle.classList.remove('playing');
+    }
+    isMuted = !isMuted;
   }
-  isMusicPlaying = !isMusicPlaying;
 });
 
 // 设置默认音量
 bgMusic.volume = 0;
-
-// 页面加载时自动播放音乐（静音状态）
-bgMusic.play().catch(error => {
-  console.error('自动播放失败:', error);
-});
