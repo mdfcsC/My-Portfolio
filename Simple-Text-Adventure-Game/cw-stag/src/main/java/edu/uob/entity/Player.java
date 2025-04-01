@@ -10,11 +10,15 @@ public class Player extends GameEntity{
     private Location currentLocation;
 
     public Player(String playerName, int maxHealth, Location startLocation) {
-        super(playerName, "Yourself, a human playing the game. ", EntityType.PLAYER);
+        super(playerName, String.format("Yourself, %s, a human playing the game. ", playerName), EntityType.PLAYER);
         this.maxHealth = maxHealth;
         this.health = this.maxHealth;
         this.inventory = new HashMap<>();
         this.currentLocation = startLocation;
+    }
+
+    public int getHealth() {
+        return this.health;
     }
 
     public boolean damageHealth(int amount) {
@@ -60,5 +64,20 @@ public class Player extends GameEntity{
 
     public void setCurrentLocation(Location location) {
         this.currentLocation = location;
+    }
+
+    /** When a player's health runs out (i.e. when it becomes zero)
+     * <br>they should lose all of the items in their inventory (which are dropped in the location where they ran out of health).
+     * <br>The player should then be transported to the start location of the game and their health level restored to full (i.e. 3)
+     */
+    public void resetStatus(Location resetLocation) {
+        for (GameEntity belonging : this.inventory.values()) {
+            this.currentLocation.pushArtefact(belonging);
+        }
+        this.health = this.maxHealth;
+        this.inventory.clear();
+        this.currentLocation.removePlayer(super.getName());
+        this.currentLocation = resetLocation;
+        this.currentLocation.addPlayer(super.getName());
     }
 }

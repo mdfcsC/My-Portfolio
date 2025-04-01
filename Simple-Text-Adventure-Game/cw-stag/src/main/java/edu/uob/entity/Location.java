@@ -9,6 +9,7 @@ public class Location extends GameEntity{
     private HashMap<String, GameEntity> characters;
     private HashMap<String, GameEntity> artefacts;
     private HashMap<String, GameEntity> furniture;
+    private HashSet<String> playersNames;
 
     public Location(String name, String description) {
         super(name, description, EntityType.LOCATION);
@@ -16,6 +17,7 @@ public class Location extends GameEntity{
         this.characters = new HashMap<>();
         this.artefacts = new HashMap<>();
         this.furniture = new HashMap<>();
+        this.playersNames = new HashSet<>();
     }
 
     public void addPath(String locationName) {
@@ -88,5 +90,17 @@ public class Location extends GameEntity{
         GameEntity furnitureToPop = this.furniture.get(furnitureName);
         this.furniture.remove(furnitureName);
         return furnitureToPop;
+    }
+
+    public void addPlayer(String playerName) {
+        this.playersNames.add(playerName);
+    }
+
+    public void removePlayer(String playerName) {
+        this.playersNames.remove(playerName);
+    }
+
+    public HashSet<String> getPlayersNames() {
+        return this.playersNames;
     }
 }
