@@ -30,8 +30,8 @@ public final class GameServer {
     public static void main(String[] args) throws IOException {
         StringBuilder entitiesFilePath = new StringBuilder();
         StringBuilder actionsFilePath = new StringBuilder();
-        entitiesFilePath.append("config").append(File.separator).append("basic-entities.dot");
-        actionsFilePath.append("config").append(File.separator).append("basic-actions.xml");
+        entitiesFilePath.append("config").append(File.separator).append("extended-entities.dot");
+        actionsFilePath.append("config").append(File.separator).append("extended-actions.xml");
 
         File entitiesFile = Paths.get(entitiesFilePath.toString()).toAbsolutePath().toFile();
         File actionsFile = Paths.get(actionsFilePath.toString()).toAbsolutePath().toFile();

@@ -97,6 +97,8 @@ public class SinglePlayerTests {
         response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("log"), "The log should be produced after cutting down tree");
         assertFalse(response.contains("tree"), "The tree should no longer be in forest");
+        assertFalse(this.entityParser.getStoreroom().getArtefacts().containsKey("log"), "Now there should not be log in storeroom");
+        assertTrue(this.entityParser.getStoreroom().getFurniture().containsKey("tree"), "Now there should be a tree in storeroom");
 
         response = sendCommandToServer("Lucy: get log");
         assertTrue(response.contains("Taken"), "The log produced should be an artefact");
