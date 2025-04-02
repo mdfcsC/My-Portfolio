@@ -10,11 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class CustomExecutor extends CommandExecutor{
-    private LinkedHashSet<String> commandEntities;
-    private Player currentPlayer;
-    private Location currentLocation;
-    private String mainCommandVerb;
-
     public CustomExecutor(GameState gameState) {
         super(gameState);
     }
@@ -24,17 +19,12 @@ public class CustomExecutor extends CommandExecutor{
             return String.format("What exactly do you want to %s?", mainCommandVerb);
         }
 
-        this.commandEntities = commandEntities;
-        this.currentPlayer = currentPlayer;
-        this.currentLocation = currentLocation;
-        this.mainCommandVerb = mainCommandVerb;
-
         // find the action that the user wants to perform
         HashSet<GameAction> relatedActions = new HashSet<>();
         GameAction commandAction = null;
 
         for (GameAction gameAction : this.gameState.getAllActions()) {
-            if (gameAction.getTriggers().contains(this.mainCommandVerb)) {
+            if (gameAction.getTriggers().contains(mainCommandVerb)) {
                 relatedActions.add(gameAction);
             }
         }
@@ -57,22 +47,22 @@ public class CustomExecutor extends CommandExecutor{
                 }
             }
             if (extraneousEntity) {
-                return String.format("Extraneous entity %s for trigger %s", commandEntity, this.mainCommandVerb);
+                return String.format("Extraneous entity %s for trigger %s", commandEntity, mainCommandVerb);
             }
         }
 
         if (commandAction == null) {
-            return String.format("You cannot %s that thing.", this.mainCommandVerb);
+            return String.format("You cannot %s that thing.", mainCommandVerb);
         }
 
         // check if this action is available for player
-        if (!this.isAvailable(commandAction)) {
-            return String.format("You are unable to %s here.", this.mainCommandVerb);
+        if (!this.isAvailable(commandAction, currentPlayer, currentLocation)) {
+            return String.format("You are unable to %s here.", mainCommandVerb);
         }
 
         // execute this action's consumed and produced
-        this.processConsume(commandAction);
-        this.processProduce(commandAction);
+        this.processConsume(commandAction, currentPlayer, currentLocation);
+        this.processProduce(commandAction, currentPlayer, currentLocation);
 
         // check player's health status
         if (currentPlayer.getHealth() <= 0) {
@@ -84,23 +74,23 @@ public class CustomExecutor extends CommandExecutor{
     }
 
     /** check if this action is available for player */
-    private boolean isAvailable(GameAction commandAction) {
+    private boolean isAvailable(GameAction commandAction, Player currentPlayer, Location currentLocation) {
         HashSet<String> actionSubjects = commandAction.getSubjects();
         for (String actionSubject : actionSubjects) {
             boolean currentSubjectAvailable = false;
             EntityType subjectType = this.gameState.getAllEntities().get(actionSubject).getType();
             switch (subjectType) {
                 case LOCATION:
-                    currentSubjectAvailable = this.currentLocation.hasPath(actionSubject);
+                    currentSubjectAvailable = currentLocation.hasPath(actionSubject);
                     break;
                 case CHARACTER:
-                    currentSubjectAvailable = this.currentLocation.getCharacters().containsKey(actionSubject);
+                    currentSubjectAvailable = currentLocation.getCharacters().containsKey(actionSubject);
                     break;
                 case ARTEFACT:
-                    currentSubjectAvailable = this.currentPlayer.getInventory().containsKey(actionSubject) || this.currentLocation.getArtefacts().containsKey(actionSubject);
+                    currentSubjectAvailable = currentPlayer.getInventory().containsKey(actionSubject) || currentLocation.getArtefacts().containsKey(actionSubject);
                     break;
                 case FURNITURE:
-                    currentSubjectAvailable = this.currentLocation.getFurniture().containsKey(actionSubject);
+                    currentSubjectAvailable = currentLocation.getFurniture().containsKey(actionSubject);
                     break;
                 default:
                     throw new RuntimeException(String.format("Cannot tell the action subject: %s", actionSubject));
@@ -115,7 +105,7 @@ public class CustomExecutor extends CommandExecutor{
     }
 
     /** consume execution */
-    private void processConsume(GameAction commandAction) {
+    private void processConsume(GameAction commandAction, Player currentPlayer, Location currentLocation) {
         for (String objectToConsume : commandAction.getConsumed()) {
             if (objectToConsume.equals("health")) {
                 if (currentPlayer.damageHealth(1)) {
@@ -125,26 +115,29 @@ public class CustomExecutor extends CommandExecutor{
                 }
             }
 
+            String objectOldLocationName = super.gameState.getAllEntities().get(objectToConsume).getLivingRoom();
+            Location objectOldLocation = super.gameState.getAllLocations().get(objectOldLocationName);
+
             EntityType entityType = super.gameState.getAllEntities().get(objectToConsume).getType();
             switch (entityType) {
                 case LOCATION:
                     currentLocation.removePath(objectToConsume);
                     break;
                 case CHARACTER:
-                    super.gameState.getStoreroom().pushCharacter(currentLocation.popCharacter(objectToConsume));
+                    super.gameState.getStoreroom().pushCharacter(objectOldLocation.popCharacter(objectToConsume));
                     break;
                 case ARTEFACT:
                     if (currentPlayer.getInventory().containsKey(objectToConsume)) {
                         super.gameState.getStoreroom().pushArtefact(currentPlayer.popInventory(objectToConsume));
                         break;
-                    } else if (currentLocation.getArtefacts().containsKey(objectToConsume)) {
-                        super.gameState.getStoreroom().pushArtefact(currentLocation.popArtefact(objectToConsume));
+                    } else if (objectOldLocation.getArtefacts().containsKey(objectToConsume)) {
+                        super.gameState.getStoreroom().pushArtefact(objectOldLocation.popArtefact(objectToConsume));
                         break;
                     } else {
                         throw new RuntimeException(String.format("Cannot consume \"%s\" here.", objectToConsume));
                     }
                 case FURNITURE:
-                    super.gameState.getStoreroom().pushFurniture(currentLocation.popFurniture(objectToConsume));
+                    super.gameState.getStoreroom().pushFurniture(objectOldLocation.popFurniture(objectToConsume));
                     break;
                 default:
                     throw new RuntimeException(String.format("Cannot consume this entity type. What is \"%s\"?", objectToConsume));
@@ -153,7 +146,7 @@ public class CustomExecutor extends CommandExecutor{
     }
 
     /** produce execution */
-    private void processProduce(GameAction commandAction) {
+    private void processProduce(GameAction commandAction, Player currentPlayer, Location currentLocation) {
         for (String objectToProduce : commandAction.getProduced()) {
             if (objectToProduce.equals("health")) {
                 if (currentPlayer.restoreHealth(1)) {
@@ -163,19 +156,22 @@ public class CustomExecutor extends CommandExecutor{
                 }
             }
 
+            String objectOldLocationName = super.gameState.getAllEntities().get(objectToProduce).getLivingRoom();
+            Location objectOldLocation = super.gameState.getAllLocations().get(objectOldLocationName);
+
             EntityType entityType =super.gameState.getAllEntities().get(objectToProduce).getType();
             switch (entityType) {
                 case LOCATION:
                     currentLocation.addPath(objectToProduce);
                     break;
                 case CHARACTER:
-                    currentLocation.pushCharacter(super.gameState.getStoreroom().popCharacter(objectToProduce));
+                    currentLocation.pushCharacter(objectOldLocation.popCharacter(objectToProduce));
                     break;
                 case ARTEFACT:
-                    currentLocation.pushArtefact(super.gameState.getStoreroom().popArtefact(objectToProduce));
+                    currentLocation.pushArtefact(objectOldLocation.popArtefact(objectToProduce));
                     break;
                 case FURNITURE:
-                    currentLocation.pushFurniture(super.gameState.getStoreroom().popFurniture(objectToProduce));
+                    currentLocation.pushFurniture(objectOldLocation.popFurniture(objectToProduce));
                     break;
                 default:
                     throw new RuntimeException(String.format("Cannot produce this entity type. What is \"%s\"?", objectToProduce));

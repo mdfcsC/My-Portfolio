@@ -62,6 +62,7 @@ public class Location extends GameEntity{
 
     // for artefact that already exists in the game system, just move between locations and player's inventory
     public void pushArtefact(GameEntity artefact) {
+        artefact.setLivingRoom(super.getName());
         this.artefacts.put(artefact.getName(), artefact);
     }
 
@@ -73,6 +74,7 @@ public class Location extends GameEntity{
     }
 
     public void pushCharacter(GameEntity character) {
+        character.setLivingRoom(super.getName());
         this.characters.put(character.getName(), character);
     }
 
@@ -83,6 +85,7 @@ public class Location extends GameEntity{
     }
 
     public void pushFurniture(GameEntity furniture) {
+        furniture.setLivingRoom(super.getName());
         this.furniture.put(furniture.getName(), furniture);
     }
 
@@ -103,4 +106,14 @@ public class Location extends GameEntity{
     public HashSet<String> getPlayersNames() {
         return this.playersNames;
     }
+
+//    @Override
+//    public String getLivingRoom() {
+//        return super.getName();
+//    }
+//
+//    @Override
+//    public void setLivingRoom(String livingRoom) {
+//        super.setLivingRoom(super.getName());
+//    }
 }

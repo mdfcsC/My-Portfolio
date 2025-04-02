@@ -49,6 +49,7 @@ public class Player extends GameEntity{
 
     // for game entity that already exists in the game system, just move between locations and player's inventory
     public void pushInventory(GameEntity gameEntity) {
+        gameEntity.setLivingRoom(null);
         this.inventory.put(gameEntity.getName(), gameEntity);
     }
 
