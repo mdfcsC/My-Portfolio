@@ -53,12 +53,7 @@ public class InputParser {
         }
         String actualCommand = input.substring(actualCommandStart).trim().toLowerCase();
 
-        /* normalise the actual command statement:
-            replace all punctuation marks except apostrophes (') with spaces
-            compress multiple consecutive spaces into a single space
-            remove opening and closing spaces
-         */
-        this.normalCommand = actualCommand.replaceAll("[\\p{Punct}&&[^']]+", " ").replaceAll("\\s+", " ").trim();
+        this.normalCommand = Normaliser.normalizeString(actualCommand);
         if (this.normalCommand.isEmpty()) {
             throw new RuntimeException("Empty normalCommand! Failed to normalise the actual command!");
         }
@@ -87,10 +82,10 @@ public class InputParser {
         if (this.mainCommandVerb == null) {
             throw new RuntimeException("No valid command found! You cannot do that!");
         }
-//
-//        System.out.println("++++++++++");
-//        System.out.println("Player name: " + this.playerName + "\nCommand verb: " + this.mainCommandVerb + "\nCommand entity words: " + this.commandEntities);
-//        System.out.println("==========");
+
+        System.out.println("++++++++++");
+        System.out.println("Player name: " + this.playerName + "\nCommand verb: " + this.mainCommandVerb + "\nCommand entity words: " + this.commandEntities);
+        System.out.println("==========");
     }
 
     private String findActionTrigger() {
@@ -105,7 +100,7 @@ public class InputParser {
                 Pattern triggerPattern = Pattern.compile(regex.toString());
                 Matcher triggerMatcher = triggerPattern.matcher(this.normalCommand);
                 if (triggerMatcher.find()) {
-                    mainCommandVerb = triggerMatcher.group();
+                    mainCommandVerb = trigger;
                     verbCounter++;
                     // if found valid custom action trigger in this GameAction, mark and skip checking the rest of triggers in this GameAction (if there are)
                     break;

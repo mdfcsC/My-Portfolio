@@ -46,10 +46,11 @@ public class EntityParser {
     private void parseLocationsGraphs(List<Graph> locationsGraphs) {
         for (Graph locationGraph : locationsGraphs) {
             Node locationDetails = locationGraph.getNodes(false).get(0);
-            String locationName = locationDetails.getId().getId().toLowerCase();
+            String locationName = Normaliser.normalizeString(locationDetails.getId().getId());
             String locationDescription = locationDetails.getAttribute("description");
 
             Location location = new Location(locationName, locationDescription);
+            location.setLivingRoom(locationName);
             this.locationMap.put(locationName, location);
             this.entityMap.put(locationName, location); // entityMap contains all mapping including locations
 
@@ -74,7 +75,7 @@ public class EntityParser {
             // Process entities (nodes) in this sub-graph
             List<Node> entitiesNodes = nonLocationGraph.getNodes(false);
             for (Node entityNode : entitiesNodes) {
-                String entityName = entityNode.getId().getId().toLowerCase();
+                String entityName = Normaliser.normalizeString(entityNode.getId().getId());
                 String entityDescription = entityNode.getAttribute("description");
 
                 GameEntity entity = null;
@@ -82,16 +83,19 @@ public class EntityParser {
                 switch (entityGraphName) {
                     case "characters":
                         entity = new Character(entityName, entityDescription);
+                        entity.setLivingRoom(location.getName());
                         location.addCharacter(entityName, entity);
                         this.entityMap.put(entityName, entity);
                         break;
                     case "artefacts":
                         entity = new Artefact(entityName, entityDescription);
+                        entity.setLivingRoom(location.getName());
                         location.addArtefact(entityName, entity);
                         this.entityMap.put(entityName, entity);
                         break;
                     case "furniture":
                         entity = new Furniture(entityName, entityDescription);
+                        entity.setLivingRoom(location.getName());
                         location.addFurniture(entityName,entity);
                         this.entityMap.put(entityName, entity);
                         break;
@@ -106,8 +110,8 @@ public class EntityParser {
 
     private void parsePaths(List<Edge> paths) {
         for (Edge path : paths) {
-            String fromLocation = path.getSource().getNode().getId().getId().toLowerCase();
-            String toLocation = path.getTarget().getNode().getId().getId().toLowerCase();
+            String fromLocation = Normaliser.normalizeString(path.getSource().getNode().getId().getId());
+            String toLocation = Normaliser.normalizeString(path.getTarget().getNode().getId().getId());
 
             // Add the path leading from source location to target location into fromLocation
             if (this.locationMap.containsKey(fromLocation)) {

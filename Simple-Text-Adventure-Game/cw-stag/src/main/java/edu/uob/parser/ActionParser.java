@@ -56,7 +56,7 @@ public class ActionParser {
 
         NodeList children = actionProperty.getElementsByTagName(childTagName);
         for (int i = 0; i < children.getLength(); i++) {
-            String childText = children.item(i).getTextContent().toLowerCase();
+            String childText = Normaliser.normalizeString(children.item(i).getTextContent());
             childrenTextContent.add(childText);
         }
 
@@ -68,7 +68,7 @@ public class ActionParser {
 
         NodeList children = actionProperty.getElementsByTagName(childTagName);
         for (int i = 0; i < children.getLength(); i++) {
-            String childText = children.item(i).getTextContent().toLowerCase();
+            String childText = Normaliser.normalizeString(children.item(i).getTextContent());
             childrenTextContent.add(childText);
         }
 
