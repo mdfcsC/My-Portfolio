@@ -69,6 +69,10 @@ public final class GameServer {
         }
     }
 
+    public GameState getGameState() {
+        return this.gameState;
+    }
+
     /**
     * Do not change the following method signature or we won't be able to mark your submission
     * This method handles all incoming game commands and carries out the corresponding actions.</p>

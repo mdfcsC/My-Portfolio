@@ -105,9 +105,24 @@ Java 课的第一个大作业，三周时间写一个数据库 —— 我错了�
 话说这两天马上有朋友要过生日了不知道送什么礼物，本来想着写个小游戏或者拿这个文字游戏改一改送给她玩，但是不知道怎么打包，也没什么心思去创造完善游戏细节 😮‍💨  
 说实话现在已经感觉很累不想打字了，还有想说的也懒得写了···  
 
+*2025-04-02*  
+
+天塌了... 今天发现虽然 `look` 的时候物品确实在地点、 `inventory` 之间传递，但是用 `entityParser` 中的 `locationHashMap()` 去获取 `Location` 然后查看该地点的 `entity` 时，没有物品的传递变化...  
+不知道是什么原因，问了 Claude 和 Cursor 一晚上了也没什么进展，准备明天问下 Tutor 😭
+
+回公寓吃了点速食盒饭，然后再问了一下 Claude ，居然解决了，原因是我写测试的时候调用的 `entityParser` `actionParser` `gameState` 和 `server` 用的不是同一个... 好低级的错误...  
+
+现在的新问题是：  
+
+1. 如果没有 `coin` 则 `fight elf and pay elf` 应当被识别成 `fight elf`  并且可以成功执行  
+2. 如果输入的动作有歧义的问题（比如有两个门可以被打开）  
+
+正在考虑把 `InputParser` 的逻辑改为先搜寻 `entity` ，判断有无超过一个动作的 `subject` ，没有的话再去判断 `trigger` 。  
+说实话 Simon 的 README.md 写得也是很模棱两可，在 Teams 上的回复也是模棱两可，一天到晚讲的课也是模棱两可 + 不知所云的冷笑话 🙄  
+
 ## Birthday Gift for a friend  
 
-*2025-04-01*
+*2025-04-01*  
 
 Copy from [faahim's happy-birthday](https://github.com/faahim/happy-birthday#)  
 

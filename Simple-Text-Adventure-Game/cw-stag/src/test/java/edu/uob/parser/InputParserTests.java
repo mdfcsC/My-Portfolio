@@ -63,4 +63,9 @@ public class InputParserTests {
         String response = sendCommandToServer("Lucy: cut down tree");
         assertTrue(response.contains("You cut down the tree with the axe"), "Action should be performed as long as subjects all exist in current location or player's inventory");
     }
+
+    @Test
+    void testGotoCurrentLocation() {
+        assertTrue(sendCommandToServer("Lucy: goto cabin").contains("You cannot go to that place"));
+    }
 }

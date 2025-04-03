@@ -21,15 +21,11 @@ public class MinorFixTests {
 
     // Create a new server _before_ every @Test
     @BeforeEach
-    void setup() throws IOException, ParseException, ParserConfigurationException, SAXException {
+    void setup() {
         File entitiesFile = Paths.get("config" + File.separator + "extended-entities.dot").toAbsolutePath().toFile();
         File actionsFile = Paths.get("config" + File.separator + "modified-extended-actions.xml").toAbsolutePath().toFile();
         this.server = new GameServer(entitiesFile, actionsFile);
-
-        EntityParser entityParser = new EntityParser(entitiesFile);
-        ActionParser actionParser = new ActionParser(actionsFile);
-
-        this.gameState = new GameState(entityParser, actionParser);
+        this.gameState = this.server.getGameState();
     }
 
     String sendCommandToServer(String command) {
@@ -64,20 +60,21 @@ public class MinorFixTests {
     void testEntityMoveWhenProduced() {
         sendCommandToServer("Lucy: goto forest");
         sendCommandToServer("Lucy: goto riverbank");
-        sendCommandToServer("Lucy: get horn");
-
         String response = sendCommandToServer("Lucy: look");
         assertFalse(response.contains("A burly wood cutter"), "In initial status there is no lumberjack at riverbank");
 
+        sendCommandToServer("Lucy: get horn");
         sendCommandToServer("Lucy: blow horn");
         response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("A burly wood cutter"), "First blow horn should take lumberjack from storeroom to current location");
+        assertFalse(this.gameState.getStoreroom().getCharacters().containsKey("lumberjack"), "After blowing horn, lumberjack should not be in storeroom");
 
         sendCommandToServer("Lucy: goto forest");
         response = sendCommandToServer("Lucy: blow horn");
         assertTrue(response.contains("You blow the horn and as if by magic, a lumberjack appears !"), "\"blow horn\" action should be able to repeat executing");
         response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("A burly wood cutter"), "Should take lumberjack from anywhere to current location");
+        assertFalse(this.gameState.getAllLocations().get("riverbank").getCharacters().containsKey("lumberjack"), "There should not be lumberjack at its previous location");
     }
 
     @Test
@@ -86,7 +83,7 @@ public class MinorFixTests {
         sendCommandToServer("Lucy: goto riverbank");
         sendCommandToServer("Lucy: get horn");
         sendCommandToServer("Lucy: blow horn");
-//        assertFalse(this.gameState.getStoreroom().getCharacters().containsKey("lumberjack"), "After \"blow horn\", lumberjack should not be in storeroom");
+        assertFalse(this.gameState.getStoreroom().getCharacters().containsKey("lumberjack"), "After \"blow horn\", lumberjack should not be in storeroom");
 
         String response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("A burly wood cutter"), "\"blow horn\" should produce a lumberjack to current location");
@@ -95,21 +92,36 @@ public class MinorFixTests {
         response = sendCommandToServer("Lucy: look");
         assertFalse(response.contains("A burly wood cutter"), "In initial status there is no lumberjack at forest");
 
-        sendCommandToServer("Lucy: reverse-blow horn");
+        response = sendCommandToServer("Lucy: reverse-blow horn");
+        System.out.println(response);
+        assertTrue(response.contains("You reverse-blow the horn and as if by magic, the lumberjack disappears"), "Should tell \"reverse-blow horn\" correctly");
+
         response = sendCommandToServer("Lucy: look");
         assertFalse(response.contains("A burly wood cutter"), "Wherever \"reverse-blow horn\" should consume the lumberjack");
-//        assertTrue(this.gameState.getStoreroom().getCharacters().containsKey("lumberjack"), "After \"reverse-blow horn\", lumberjack should be back to storeroom");
+        assertTrue(this.gameState.getStoreroom().getCharacters().containsKey("lumberjack"), "After \"reverse-blow horn\", lumberjack should be back to storeroom");
 
         sendCommandToServer("Lucy: goto riverbank");
         response = sendCommandToServer("Lucy: look");
         assertFalse(response.contains("A burly wood cutter"), "Now there should not be a lumberjack at riverbank");
     }
 
+//    // should fail unless change the trigger of action (line 156, modified-extended-actions.xml), but Simon said that trigger phrases cannot (and will not) contain the names of entities
+//    @Test
+//    void testEntityNameInActionTrigger() {
+//        sendCommandToServer("Lucy: goto forest");
+//        sendCommandToServer("Lucy: get key");
+//        sendCommandToServer("Lucy: goto cabin");
+//        String response = sendCommandToServer("Lucy: key the trapdoor with the key");
+//        assertTrue(response.contains("a path to cellar appears"), "entity name in action trigger TEST");
+//    }
+
     @Test
-    void testEntityNameInActionTrigger() {
+    void testTwoTriggersButOneHasValidSubject() {
         sendCommandToServer("Lucy: goto forest");
         sendCommandToServer("Lucy: get key");
         sendCommandToServer("Lucy: goto cabin");
-        String response = sendCommandToServer("Lucy: ");
+        sendCommandToServer("Lucy: open door with the key");
+        String response = sendCommandToServer("Lucy: fight elf and pay elf");
+        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"), "Without coin, the command should succeed to fight elf");
     }
 }

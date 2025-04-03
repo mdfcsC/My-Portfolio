@@ -1,16 +1,11 @@
 package edu.uob.extended;
 
-import com.alexmerz.graphviz.ParseException;
 import edu.uob.GameServer;
-import edu.uob.parser.ActionParser;
-import edu.uob.parser.EntityParser;
+import edu.uob.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 
@@ -19,17 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SinglePlayerTests {
 
     private GameServer server;
-    private ActionParser actionParser;
-    private EntityParser entityParser;
+    private GameState gameState;
 
     // Create a new server _before_ every @Test
     @BeforeEach
-    void setup() throws IOException, ParseException, ParserConfigurationException, SAXException {
+    void setup() {
         File entitiesFile = Paths.get("config" + File.separator + "extended-entities.dot").toAbsolutePath().toFile();
         File actionsFile = Paths.get("config" + File.separator + "extended-actions.xml").toAbsolutePath().toFile();
-        this.actionParser = new ActionParser(actionsFile);
-        this.entityParser = new EntityParser(entitiesFile);
         this.server = new GameServer(entitiesFile, actionsFile);
+        this.gameState = this.server.getGameState();
     }
 
     String sendCommandToServer(String command) {
@@ -40,9 +33,9 @@ public class SinglePlayerTests {
 
     @Test
     void testConfigFilesLoading() {
-        assertEquals(6, this.entityParser.getLocationMap().size(), "Location numbers should be 6");
-        assertEquals(21, this.entityParser.getEntityMap().size(), "Total Entity numbers should be 21");
-        assertEquals(8, this.actionParser.getGameActions().size(), "Total custom actions should be 8");
+        assertEquals(6, this.gameState.getAllLocations().size(), "Location numbers should be 6");
+        assertEquals(21, this.gameState.getAllEntities().size(), "Total Entity numbers should be 21");
+        assertEquals(8, this.gameState.getAllActions().size(), "Total custom actions should be 8");
     }
 
     @Test
@@ -97,8 +90,8 @@ public class SinglePlayerTests {
         response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("log"), "The log should be produced after cutting down tree");
         assertFalse(response.contains("tree"), "The tree should no longer be in forest");
-        assertFalse(this.entityParser.getStoreroom().getArtefacts().containsKey("log"), "Now there should not be log in storeroom");
-        assertTrue(this.entityParser.getStoreroom().getFurniture().containsKey("tree"), "Now there should be a tree in storeroom");
+        assertFalse(this.gameState.getStoreroom().getArtefacts().containsKey("log"), "Now there should not be log in storeroom");
+        assertTrue(this.gameState.getStoreroom().getFurniture().containsKey("tree"), "Now there should be a tree in storeroom");
 
         response = sendCommandToServer("Lucy: get log");
         assertTrue(response.contains("Taken"), "The log produced should be an artefact");

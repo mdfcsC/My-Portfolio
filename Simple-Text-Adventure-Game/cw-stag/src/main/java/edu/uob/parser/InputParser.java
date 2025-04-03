@@ -96,7 +96,14 @@ public class InputParser {
         for (GameAction gameAction : this.gameActionsSet) {
             for (String trigger : gameAction.getTriggers()) {
                 StringBuilder regex = new StringBuilder();
-                regex.append("\\b").append(Pattern.quote(trigger)).append("\\b");
+
+                // Negative lookbehind: Ensures the trigger is not preceded by a letter, hyphen, or apostrophe
+                regex.append("(?<![A-Za-z'-])")
+                        // Quote the trigger to treat any special characters as literals
+                        .append(Pattern.quote(trigger))
+                        // Negative lookahead: Ensures the trigger is not followed by a letter, hyphen, or apostrophe
+                        .append("(?![A-Za-z'-])");
+
                 Pattern triggerPattern = Pattern.compile(regex.toString());
                 Matcher triggerMatcher = triggerPattern.matcher(this.normalCommand);
                 if (triggerMatcher.find()) {
