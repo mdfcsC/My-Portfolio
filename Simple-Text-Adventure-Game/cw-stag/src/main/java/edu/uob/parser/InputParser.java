@@ -2,7 +2,6 @@ package edu.uob.parser;
 
 import edu.uob.GameState;
 import edu.uob.action.GameAction;
-import edu.uob.entity.GameEntity;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -12,21 +11,21 @@ public class InputParser {
     private Pattern playerNamePattern;
     private String playerName;
 
-    private String normalCommand; // tokenised normalised actual command without player name
     private LinkedHashSet<String> commandEntities;
-    private String mainCommandVerb;
+    private String mainCommandVerb; // only for built-in command
     private LinkedList<String> possibleTriggers;
 
     private Set<String> gameEntitiesSet;
     private HashSet<GameAction> gameActionsSet;
 
     public InputParser(GameState gameState) {
+        // Valid player names can consist of uppercase and lowercase letters, spaces, apostrophes and hyphens
         this.playerNamePattern = Pattern.compile("^[A-Za-z\\s'-]+$");
         this.playerName = null;
 
-        this.normalCommand = null;
         this.commandEntities = null;
         this.mainCommandVerb = null;
+        this.possibleTriggers = null;
 
         this.gameEntitiesSet = gameState.getAllEntities().keySet();
         this.gameActionsSet = gameState.getAllActions();
@@ -53,54 +52,21 @@ public class InputParser {
         }
         String actualCommand = input.substring(actualCommandStart).trim().toLowerCase();
 
-        this.normalCommand = Normaliser.normalizeString(actualCommand);
-        if (this.normalCommand.isEmpty()) {
+        String normalCommand = Normaliser.normalizeString(actualCommand); // tokenised normalised actual command without player name
+        if (normalCommand.isEmpty()) {
             throw new RuntimeException("Empty normalCommand! Failed to normalise the actual command!");
         }
 
-        Scanner scanner = new Scanner(this.normalCommand);
-        while (scanner.hasNext()) {
-            String nextWord = scanner.next().trim();
-
-            if (this.gameEntitiesSet.contains(nextWord)) {
-                this.commandEntities.add(nextWord);
-
-                // case that player's input contains more than one entity
-                // valid only for multiple subjects in the same custom action
-                // built-in commands never can have more than one entity
-                if (this.commandEntities.size() > 1) {
-                    boolean extraneous = true;
-                    for (GameAction gameAction : this.gameActionsSet) {
-                        boolean sameActionSubjects = true;
-                        for (String commandEntity : this.commandEntities) {
-                            if (!gameAction.getSubjects().contains(commandEntity)) {
-                                sameActionSubjects = false;
-                                break;
-                            }
-                        }
-                        if (sameActionSubjects) {
-                            extraneous = false;
-                            break;
-                        }
-                    }
-                    if (extraneous) {
-                        throw new RuntimeException("Multiple extraneous entities! You can only issue one command at a time!");
-                    }
-                }
-            }
-        }
-        scanner.close();
+        this.findCommandEntities(normalCommand);
 
         // check if there is a built-in command
-        String possibleBuiltInVerb = this.findBuiltInCommand();
-
+        String possibleBuiltInVerb = this.findBuiltInCommand(normalCommand);
         // check if there is a custom action trigger
-        LinkedList<String> possibleActionTriggers = this.findActionTrigger();
+        LinkedList<String> possibleActionTriggers = this.findActionTriggers(normalCommand);
 
         if (possibleBuiltInVerb != null && !possibleActionTriggers.isEmpty()) {
             throw new RuntimeException("Multiple commands! You can only issue one command at a time!");
         }
-
         if (possibleBuiltInVerb == null && possibleActionTriggers.isEmpty()) {
             throw new RuntimeException("No valid command found! What do you want to do?");
         }
@@ -113,13 +79,52 @@ public class InputParser {
 //        System.out.println("==========");
     }
 
-    private String findBuiltInCommand() {
+    private void findCommandEntities(String normalCommand) {
+        Scanner scanner = new Scanner(normalCommand);
+        while (scanner.hasNext()) {
+            String nextWord = scanner.next().trim();
+            if (this.gameEntitiesSet.contains(nextWord)) {
+                this.commandEntities.add(nextWord);
+            }
+        }
+        scanner.close();
+
+        this.checkExtraneousEntities();
+    }
+
+    /** case that player's input contains more than one entity
+     * <br>valid only for multiple subjects in the same custom action
+     * <br>built-in commands never can have more than one entity
+     */
+    private void checkExtraneousEntities() {
+        if (this.commandEntities.size() > 1) {
+            boolean extraneous = true;
+            for (GameAction gameAction : this.gameActionsSet) {
+                boolean sameActionSubjects = true;
+                for (String commandEntity : this.commandEntities) {
+                    if (!gameAction.getSubjects().contains(commandEntity)) {
+                        sameActionSubjects = false;
+                        break;
+                    }
+                }
+                if (sameActionSubjects) {
+                    extraneous = false;
+                    break;
+                }
+            }
+            if (extraneous) {
+                throw new RuntimeException("Multiple extraneous entities! You can only issue one command at a time!");
+            }
+        }
+    }
+
+    private String findBuiltInCommand(String normalCommand) {
         int verbCounter = 0;
         String validBuiltInCommand = null;
         HashSet<String> builtInCommands = new HashSet<>(Set.of("inventory", "inv", "get", "drop", "goto", "look", "health"));
 
         for (String builtInCommand : builtInCommands) {
-            Matcher matcher = this.compileMatchPattern(builtInCommand).matcher(this.normalCommand);
+            Matcher matcher = this.compileMatchPattern(builtInCommand).matcher(normalCommand);
 
             if (matcher.find()) {
                 validBuiltInCommand = builtInCommand;
@@ -135,13 +140,13 @@ public class InputParser {
         return validBuiltInCommand;
     }
 
-    private LinkedList<String> findActionTrigger() {
+    private LinkedList<String> findActionTriggers(String normalCommand) {
         LinkedList<String> verbs = new LinkedList<>();
 
         // check if input contains custom action trigger
         for (GameAction gameAction : this.gameActionsSet) {
             for (String trigger : gameAction.getTriggers()) {
-                Matcher triggerMatcher = this.compileMatchPattern(trigger).matcher(this.normalCommand);
+                Matcher triggerMatcher = this.compileMatchPattern(trigger).matcher(normalCommand);
 
                 // find matching substring
                 if (triggerMatcher.find()) {
@@ -176,6 +181,7 @@ public class InputParser {
         return this.commandEntities;
     }
 
+    /** only could be built-in command */
     public String getMainCommandVerb() {
         return this.mainCommandVerb;
     }
