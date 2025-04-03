@@ -8,24 +8,27 @@ import edu.uob.entity.Player;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 public class CustomExecutor extends CommandExecutor{
     public CustomExecutor(GameState gameState) {
         super(gameState);
     }
 
-    public String executeAction(LinkedHashSet<String> commandEntities, Player currentPlayer, Location currentLocation, String mainCommandVerb) {
+    public String executeAction(LinkedHashSet<String> commandEntities, Player currentPlayer, Location currentLocation, LinkedList<String> possibleTriggers) {
         if (commandEntities.isEmpty()) {
-            return String.format("What exactly do you want to %s?", mainCommandVerb);
+            return "What exactly do you want to do?";
         }
 
         // find the action that the user wants to perform
         HashSet<GameAction> relatedActions = new HashSet<>();
         GameAction commandAction = null;
 
-        for (GameAction gameAction : this.gameState.getAllActions()) {
-            if (gameAction.getTriggers().contains(mainCommandVerb)) {
-                relatedActions.add(gameAction);
+        for (String possibleTrigger : possibleTriggers) {
+            for (GameAction gameAction : this.gameState.getAllActions()) {
+                if (gameAction.getTriggers().contains(possibleTrigger)) {
+                    relatedActions.add(gameAction);
+                }
             }
         }
 
@@ -37,27 +40,26 @@ public class CustomExecutor extends CommandExecutor{
                     extraneousEntity = false;
 
                     // case that multiple subjects but all are in one same action
-                    if (commandAction == relatedAction) {
+                    if (commandAction != null && commandAction == relatedAction) {
                         break;
                     }
 
-                    commandAction = relatedAction;
-                    // if found valid custom action subject in this GameAction, mark and skip checking the rest of subjects in this GameAction (if there are)
-                    break;
+                    if (isAvailable(relatedAction, currentPlayer, currentLocation)) {
+                        if (commandAction != null) {
+                            return "There are more than one choice. Which one do you prefer?";
+                        }
+
+                        commandAction = relatedAction;
+                    }
                 }
             }
             if (extraneousEntity) {
-                return String.format("Extraneous entity %s for trigger %s", commandEntity, mainCommandVerb);
+                return String.format("Extraneous entity %s.", commandEntity);
             }
         }
 
         if (commandAction == null) {
-            return String.format("You cannot %s that thing.", mainCommandVerb);
-        }
-
-        // check if this action is available for player
-        if (!this.isAvailable(commandAction, currentPlayer, currentLocation)) {
-            return String.format("You are unable to %s here.", mainCommandVerb);
+            return String.format("You cannot do it.");
         }
 
         // execute this action's consumed and produced
@@ -76,8 +78,9 @@ public class CustomExecutor extends CommandExecutor{
     /** check if this action is available for player */
     private boolean isAvailable(GameAction commandAction, Player currentPlayer, Location currentLocation) {
         HashSet<String> actionSubjects = commandAction.getSubjects();
+
         for (String actionSubject : actionSubjects) {
-            boolean currentSubjectAvailable = false;
+            boolean currentSubjectAvailable;
             EntityType subjectType = this.gameState.getAllEntities().get(actionSubject).getType();
             switch (subjectType) {
                 case LOCATION:

@@ -1,15 +1,9 @@
 package edu.uob;
 
-import com.alexmerz.graphviz.ParseException;
-import edu.uob.parser.ActionParser;
-import edu.uob.parser.EntityParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 
@@ -105,23 +99,37 @@ public class MinorFixTests {
         assertFalse(response.contains("A burly wood cutter"), "Now there should not be a lumberjack at riverbank");
     }
 
-//    // should fail unless change the trigger of action (line 156, modified-extended-actions.xml), but Simon said that trigger phrases cannot (and will not) contain the names of entities
-//    @Test
-//    void testEntityNameInActionTrigger() {
-//        sendCommandToServer("Lucy: goto forest");
-//        sendCommandToServer("Lucy: get key");
-//        sendCommandToServer("Lucy: goto cabin");
-//        String response = sendCommandToServer("Lucy: key the trapdoor with the key");
-//        assertTrue(response.contains("a path to cellar appears"), "entity name in action trigger TEST");
-//    }
-
     @Test
     void testTwoTriggersButOneHasValidSubject() {
         sendCommandToServer("Lucy: goto forest");
         sendCommandToServer("Lucy: get key");
         sendCommandToServer("Lucy: goto cabin");
         sendCommandToServer("Lucy: open door with the key");
+        sendCommandToServer("Lucy: goto cellar");
         String response = sendCommandToServer("Lucy: fight elf and pay elf");
         assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"), "Without coin, the command should succeed to fight elf");
+        response = sendCommandToServer("Lucy: hit and pay elf");
+        assertTrue(response.contains("You attack the elf, but he fights back and you lose some health"), "Without coin, the command should succeed to hit elf");
+
+        sendCommandToServer("Lucy: goto cabin");
+        sendCommandToServer("Lucy: get coin");
+        sendCommandToServer("Lucy: goto cellar");
+        response = sendCommandToServer("Lucy: fight elf and pay elf");
+        assertTrue(response.contains("Which one do you prefer?"), "With coin, should fail due to two valid commands at a time");
+    }
+
+    @Test
+    void testTwoCompleteCommands() {
+        sendCommandToServer("Lucy: get axe");
+        sendCommandToServer("Lucy: goto forest");
+        sendCommandToServer("Lucy: chop tree");
+        sendCommandToServer("Lucy: get log");
+        sendCommandToServer("Lucy: goto riverbank");
+        String response = sendCommandToServer("Lucy: bridge river and blow horn");
+        assertTrue(response.contains("Multiple extraneous entities"), "Should fail due to extraneous entities for each other");
+
+        sendCommandToServer("Lucy: get horn");
+        response = sendCommandToServer("Lucy: blow horn and bridge river");
+        assertTrue(response.contains("Multiple extraneous entities"), "Should fail due to extraneous entities for each other");
     }
 }

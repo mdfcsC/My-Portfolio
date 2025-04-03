@@ -18,6 +18,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 public final class GameServer {
 
@@ -86,7 +87,9 @@ public final class GameServer {
 
             String playerName = this.inputParser.getPlayerName();
             LinkedHashSet<String> commandEntities = this.inputParser.getCommandEntities();
-            String mainCommandVerb = this.inputParser.getMainCommandVerb();
+
+            String mainCommandVerb = this.inputParser.getMainCommandVerb(); // only for built-in command
+            LinkedList<String> possibleTriggers = this.inputParser.getPossibleTriggers();
 
             // check if the player name exists, case-insensitive when searching
             boolean existingPlayer = false;
@@ -103,22 +106,27 @@ public final class GameServer {
             Player currentPlayer = this.gameState.getPlayersHashMap().get(playerName);
             Location currentLocation = currentPlayer.getCurrentLocation();
 
-            String result = switch (mainCommandVerb) {
-                case "inventory", "inv":
-                    yield new BuiltInExecutor(this.gameState).executeInventory(currentPlayer);
-                case "get":
-                    yield new BuiltInExecutor(this.gameState).executeGet(commandEntities, currentPlayer, currentLocation);
-                case "drop":
-                    yield new BuiltInExecutor(this.gameState).executeDrop(commandEntities, currentPlayer, currentLocation);
-                case "goto":
-                    yield new BuiltInExecutor(this.gameState).executeGoto(commandEntities, currentPlayer);
-                case "look":
-                    yield new BuiltInExecutor(this.gameState).executeLook(currentPlayer.getName(), currentLocation);
-                case "health":
-                    yield new BuiltInExecutor(this.gameState).executeHealth(currentPlayer);
-                default:
-                    yield new CustomExecutor(this.gameState).executeAction(commandEntities, currentPlayer, currentLocation, mainCommandVerb);
-            };
+            String result = null;
+            if (mainCommandVerb != null) {
+                result = switch (mainCommandVerb) {
+                    case "inventory", "inv":
+                        yield new BuiltInExecutor(this.gameState).executeInventory(currentPlayer);
+                    case "get":
+                        yield new BuiltInExecutor(this.gameState).executeGet(commandEntities, currentPlayer, currentLocation);
+                    case "drop":
+                        yield new BuiltInExecutor(this.gameState).executeDrop(commandEntities, currentPlayer, currentLocation);
+                    case "goto":
+                        yield new BuiltInExecutor(this.gameState).executeGoto(commandEntities, currentPlayer);
+                    case "look":
+                        yield new BuiltInExecutor(this.gameState).executeLook(currentPlayer.getName(), currentLocation);
+                    case "health":
+                        yield new BuiltInExecutor(this.gameState).executeHealth(currentPlayer);
+                    default:
+                        throw new RuntimeException(String.format("Unknown command verb: %s", mainCommandVerb));
+                };
+            } else {
+                result = new CustomExecutor(this.gameState).executeAction(commandEntities, currentPlayer, currentLocation, possibleTriggers);
+            }
 
             if (result == null) {
                 throw new RuntimeException(String.format("For command verb: \"%s\", cannot find the command entity: %s", mainCommandVerb, commandEntities));

@@ -2,11 +2,9 @@ package edu.uob.parser;
 
 import edu.uob.GameState;
 import edu.uob.action.GameAction;
+import edu.uob.entity.GameEntity;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +15,7 @@ public class InputParser {
     private String normalCommand; // tokenised normalised actual command without player name
     private LinkedHashSet<String> commandEntities;
     private String mainCommandVerb;
+    private LinkedList<String> possibleTriggers;
 
     private Set<String> gameEntitiesSet;
     private HashSet<GameAction> gameActionsSet;
@@ -36,6 +35,7 @@ public class InputParser {
     public void parseInput(String input) {
         // each call creates a new instance so it won't contain previous input words
         this.commandEntities = new LinkedHashSet<>();
+        this.possibleTriggers = new LinkedList<>();
 
         // divide player name and actual command statement
         int colonIndex = input.indexOf(":"); // Returns: the index of the first occurrence of the specified substring, or -1 if there is no such occurrence.
@@ -58,89 +58,129 @@ public class InputParser {
             throw new RuntimeException("Empty normalCommand! Failed to normalise the actual command!");
         }
 
-        // search if normalised actual command contains custom action trigger, null if not
-        this.mainCommandVerb = this.findActionTrigger();
-
         Scanner scanner = new Scanner(this.normalCommand);
         while (scanner.hasNext()) {
             String nextWord = scanner.next().trim();
 
-            // ensure at most one built-in command or action trigger
-            if (this.mainCommandVerb != null && this.isBuiltInCommand(nextWord)) {
-                throw new RuntimeException("Multiple commands! You can only issue one command at a time!");
-            }
-            if (this.isBuiltInCommand(nextWord)) {
-                this.mainCommandVerb = nextWord;
-            }
-
             if (this.gameEntitiesSet.contains(nextWord)) {
                 this.commandEntities.add(nextWord);
+
+                // case that player's input contains more than one entity
+                // valid only for multiple subjects in the same custom action
+                // built-in commands never can have more than one entity
+                if (this.commandEntities.size() > 1) {
+                    boolean extraneous = true;
+                    for (GameAction gameAction : this.gameActionsSet) {
+                        boolean sameActionSubjects = true;
+                        for (String commandEntity : this.commandEntities) {
+                            if (!gameAction.getSubjects().contains(commandEntity)) {
+                                sameActionSubjects = false;
+                                break;
+                            }
+                        }
+                        if (sameActionSubjects) {
+                            extraneous = false;
+                            break;
+                        }
+                    }
+                    if (extraneous) {
+                        throw new RuntimeException("Multiple extraneous entities! You can only issue one command at a time!");
+                    }
+                }
             }
         }
         scanner.close();
 
-        if (this.mainCommandVerb == null) {
-            throw new RuntimeException("No valid command found! You cannot do that!");
+        // check if there is a built-in command
+        String possibleBuiltInVerb = this.findBuiltInCommand();
+
+        // check if there is a custom action trigger
+        LinkedList<String> possibleActionTriggers = this.findActionTrigger();
+
+        if (possibleBuiltInVerb != null && !possibleActionTriggers.isEmpty()) {
+            throw new RuntimeException("Multiple commands! You can only issue one command at a time!");
         }
 
-        System.out.println("++++++++++");
-        System.out.println("Player name: " + this.playerName + "\nCommand verb: " + this.mainCommandVerb + "\nCommand entity words: " + this.commandEntities);
-        System.out.println("==========");
+        if (possibleBuiltInVerb == null && possibleActionTriggers.isEmpty()) {
+            throw new RuntimeException("No valid command found! What do you want to do?");
+        }
+
+        this.mainCommandVerb = possibleBuiltInVerb;
+        this.possibleTriggers = possibleActionTriggers;
+
+//        System.out.println("++++++++++");
+//        System.out.printf("Player name: %s\nCommand verb: %s\nPossible Triggers:%s\nCommand entity words: %s\n", this.playerName, this.mainCommandVerb, this.possibleTriggers, this.commandEntities);
+//        System.out.println("==========");
     }
 
-    private String findActionTrigger() {
-        String mainCommandVerb = null;
+    private String findBuiltInCommand() {
         int verbCounter = 0;
+        String validBuiltInCommand = null;
+        HashSet<String> builtInCommands = new HashSet<>(Set.of("inventory", "inv", "get", "drop", "goto", "look", "health"));
+
+        for (String builtInCommand : builtInCommands) {
+            Matcher matcher = this.compileMatchPattern(builtInCommand).matcher(this.normalCommand);
+
+            if (matcher.find()) {
+                validBuiltInCommand = builtInCommand;
+                verbCounter++;
+            }
+        }
+        if (verbCounter > 1) {
+            throw new RuntimeException("Multiple built-in commands! You can only issue one command at a time!");
+        }
+        if (verbCounter == 0) {
+            return null;
+        }
+        return validBuiltInCommand;
+    }
+
+    private LinkedList<String> findActionTrigger() {
+        LinkedList<String> verbs = new LinkedList<>();
 
         // check if input contains custom action trigger
         for (GameAction gameAction : this.gameActionsSet) {
             for (String trigger : gameAction.getTriggers()) {
-                StringBuilder regex = new StringBuilder();
+                Matcher triggerMatcher = this.compileMatchPattern(trigger).matcher(this.normalCommand);
 
-                // Negative lookbehind: Ensures the trigger is not preceded by a letter, hyphen, or apostrophe
-                regex.append("(?<![A-Za-z'-])")
-                        // Quote the trigger to treat any special characters as literals
-                        .append(Pattern.quote(trigger))
-                        // Negative lookahead: Ensures the trigger is not followed by a letter, hyphen, or apostrophe
-                        .append("(?![A-Za-z'-])");
-
-                Pattern triggerPattern = Pattern.compile(regex.toString());
-                Matcher triggerMatcher = triggerPattern.matcher(this.normalCommand);
+                // find matching substring
                 if (triggerMatcher.find()) {
-                    mainCommandVerb = trigger;
-                    verbCounter++;
+                    verbs.add(trigger);
                     // if found valid custom action trigger in this GameAction, mark and skip checking the rest of triggers in this GameAction (if there are)
                     break;
                 }
             }
         }
-
-        // ensure at most one custom action trigger
-        if (verbCounter > 1) {
-            throw new RuntimeException("Multiple custom action commands! You can only issue one command at a time!");
-        }
-        return mainCommandVerb;
+        return verbs;
     }
 
-    private boolean isBuiltInCommand(String word) {
-        return word.equals("inventory") || word.equals("inv") ||
-                word.equals("get") ||
-                word.equals("drop") ||
-                word.equals("goto") ||
-                word.equals("look") ||
-                word.equals("health");
+    private Pattern compileMatchPattern (String checkingWord) {
+        StringBuilder verbRegex = new StringBuilder();
+
+        // Negative lookbehind: Ensures the trigger is not preceded by a letter, hyphen, or apostrophe
+        verbRegex.append("(?<![A-Za-z'-])")
+                // Quote the trigger to treat any special characters as literals
+                .append(Pattern.quote(checkingWord))
+                // Negative lookahead: Ensures the trigger is not followed by a letter, hyphen, or apostrophe
+                .append("(?![A-Za-z'-])");
+
+        return Pattern.compile(verbRegex.toString());
     }
 
     public String getPlayerName() {
         return this.playerName;
     }
 
-    /** entities within entities.dot */
+    /** entities within entities.dot, but only this InputParser parsed ones */
     public LinkedHashSet<String> getCommandEntities() {
         return this.commandEntities;
     }
 
     public String getMainCommandVerb() {
         return this.mainCommandVerb;
+    }
+
+    public LinkedList<String> getPossibleTriggers() {
+        return this.possibleTriggers;
     }
 }

@@ -47,7 +47,7 @@ public class InputParserTests {
     @Test
     void testMultiSubjects() {
         String response = sendCommandToServer("lucy: open the trapdoor, axe");
-        assertTrue(response.contains("Extraneous entity"), "Should reject multiple extraneous subjects");
+        assertTrue(response.contains("Multiple extraneous entities"), "Should reject multiple extraneous subjects");
 
         sendCommandToServer("lucy: get axe");
         sendCommandToServer("lucy: goto forest");

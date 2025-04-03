@@ -120,6 +120,21 @@ Java 课的第一个大作业，三周时间写一个数据库 —— 我错了�
 正在考虑把 `InputParser` 的逻辑改为先搜寻 `entity` ，判断有无超过一个动作的 `subject` ，没有的话再去判断 `trigger` 。  
 说实话 Simon 的 README.md 写得也是很模棱两可，在 Teams 上的回复也是模棱两可，一天到晚讲的课也是模棱两可 + 不知所云的冷笑话 🙄  
 
+*2025-04-03*  
+
+昨天的第一个新问题解决了，按照昨天的那个想法改的。
+
+第二个问题，我看不懂、不知道该怎么改、不想改了...  
+第二个问题的相关要求如下：  
+
+```markdown
+**Ambiguous Commands**  
+Much of the above "fuzzy" matching of actions is risky - there may be situations where _more than one_ action matches a particular command.
+If a particular command is ambiguous (i.e. there is _more than one_ **valid** and **performable** action possible)
+then NO action should be performed and a suitable warning message sent back to the user
+(e.g. `there is more than one 'open' action possible - which one do you want to perform ?`)
+```
+
 ## Birthday Gift for a friend  
 
 *2025-04-01*  

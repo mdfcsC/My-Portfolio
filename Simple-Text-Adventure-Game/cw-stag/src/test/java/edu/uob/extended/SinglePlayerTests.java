@@ -43,8 +43,9 @@ public class SinglePlayerTests {
         sendCommandToServer("Lucy: goto forest");
         sendCommandToServer("Lucy: get key");
         sendCommandToServer("Lucy: goto cabin");
-        sendCommandToServer("Lucy: unlock trapdoor");
-        String response = sendCommandToServer("Lucy: look");
+        String response = sendCommandToServer("Lucy: unlock trapdoor");
+        assertTrue(response.contains("You unlock the door and see steps leading down into a cellar"), "Should succeed to unlock the door");
+        response = sendCommandToServer("Lucy: look");
         assertTrue(response.contains("cellar"), "Now should unlock a new path");
     }
 
@@ -105,7 +106,8 @@ public class SinglePlayerTests {
         sendCommandToServer("Lucy: unlock trapdoor");
         sendCommandToServer("Lucy: goto cellar");
         String response = sendCommandToServer("Lucy: pay elf");
-        assertTrue(response.contains("You are unable to pay here"), "Should fail to pay elf without coin");
+        System.out.println(response);
+        assertTrue(response.contains("You cannot do it."), "Should fail to pay elf without coin");
     }
 
     @Test
