@@ -70,6 +70,7 @@ public final class GameServer {
         }
     }
 
+    // My codes (used for my own tests)
     public GameState getGameState() {
         return this.gameState;
     }

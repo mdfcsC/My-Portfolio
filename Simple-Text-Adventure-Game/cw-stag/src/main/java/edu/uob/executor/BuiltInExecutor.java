@@ -154,7 +154,7 @@ public class BuiltInExecutor extends CommandExecutor{
 
         // only show nearby players' names when there are other players here (not just current player here)
         if (currentLocation.getPlayersNames().size() > 1) {
-            details.append("Players: ");
+            details.append("Other Players: ");
             details.append(showNearbyPlayers(currentPlayerName, currentLocation.getPlayersNames()));
         }
 
@@ -168,7 +168,7 @@ public class BuiltInExecutor extends CommandExecutor{
         for (String objectName : objectsMap.keySet()) {
             String characterDetail = objectsMap.get(objectName).getDescription();
             objectsDetails.append(characterDetail);
-            objectsDetails.append(", ");
+            objectsDetails.append("; ");
         }
         // remove the last comma and blank, then add newline
         objectsDetails.replace(objectsDetails.length() - 2, objectsDetails.length(), "\n");

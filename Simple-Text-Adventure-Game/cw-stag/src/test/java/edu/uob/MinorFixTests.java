@@ -87,7 +87,6 @@ public class MinorFixTests {
         assertFalse(response.contains("A burly wood cutter"), "In initial status there is no lumberjack at forest");
 
         response = sendCommandToServer("Lucy: reverse-blow horn");
-        System.out.println(response);
         assertTrue(response.contains("You reverse-blow the horn and as if by magic, the lumberjack disappears"), "Should tell \"reverse-blow horn\" correctly");
 
         response = sendCommandToServer("Lucy: look");

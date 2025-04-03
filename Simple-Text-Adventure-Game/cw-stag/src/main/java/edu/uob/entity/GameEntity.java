@@ -8,6 +8,8 @@ public abstract class GameEntity {
     /** name of location where this entity is
         <br>same as name for Location
         <br>null if this entity is taken by player
+        <br>seems not useful for Player (see Player as a GameEntity as well)
+        <br>livingRoom is a feature that was added after the basic structure was written
     */
     private String livingRoom;
 

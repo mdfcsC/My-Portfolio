@@ -68,7 +68,7 @@ public class Player extends GameEntity{
     }
 
     /** When a player's health runs out (i.e. when it becomes zero)
-     * <br>they should lose all of the items in their inventory (which are dropped in the location where they ran out of health).
+     * <br>they should lose all the items in their inventory (which are dropped in the location where they ran out of health).
      * <br>The player should then be transported to the start location of the game and their health level restored to full (i.e. 3)
      */
     public void resetStatus(Location resetLocation) {

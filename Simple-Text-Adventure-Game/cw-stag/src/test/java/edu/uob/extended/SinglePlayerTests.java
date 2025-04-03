@@ -106,7 +106,6 @@ public class SinglePlayerTests {
         sendCommandToServer("Lucy: unlock trapdoor");
         sendCommandToServer("Lucy: goto cellar");
         String response = sendCommandToServer("Lucy: pay elf");
-        System.out.println(response);
         assertTrue(response.contains("You cannot do it."), "Should fail to pay elf without coin");
     }
 
