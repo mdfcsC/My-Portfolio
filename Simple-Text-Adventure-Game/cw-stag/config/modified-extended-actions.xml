@@ -20,6 +20,18 @@
 
     <action>
         <triggers>
+            <keyphrase>open</keyphrase>
+        </triggers>
+        <subjects>
+            <entity>axe</entity>
+        </subjects>
+        <consumed></consumed>
+        <produced></produced>
+        <narration>God, you open the axe !</narration>
+    </action>
+
+    <action>
+        <triggers>
             <keyphrase>chop</keyphrase>
             <keyphrase>cut down</keyphrase>
         </triggers>

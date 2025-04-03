@@ -131,4 +131,27 @@ public class MinorFixTests {
         response = sendCommandToServer("Lucy: blow horn and bridge river");
         assertTrue(response.contains("Multiple extraneous entities"), "Should fail due to extraneous entities for each other");
     }
+
+    @Test
+    void testSameTriggerButDifferentActions() {
+        String response = sendCommandToServer("Lucy: open axe");
+        assertTrue(response.contains("God, you open the axe !"), "Strange but valid action according to modified-extended-actions.xml");
+
+        sendCommandToServer("Lucy: goto forest");
+        response = sendCommandToServer("Lucy: open axe");
+        assertTrue(response.contains("You cannot do it"), "No subject axe exists in forest now");
+
+        sendCommandToServer("Lucy: goto cabin");
+        sendCommandToServer("Lucy: get axe");
+        sendCommandToServer("Lucy: goto forest");
+        response = sendCommandToServer("Lucy: open axe");
+        assertTrue(response.contains("God, you open the axe !"), "axe in player's inventory so this action should succeed");
+
+        sendCommandToServer("Lucy: get key");
+        sendCommandToServer("Lucy: goto cabin");
+        response = sendCommandToServer("Lucy: open axe");
+        assertTrue(response.contains("God, you open the axe !"), "Should succeed to open axe rather than open trapdoor");
+        response = sendCommandToServer("Lucy: open trapdoor");
+        assertTrue(response.contains("You unlock the door and see steps leading down into a cellar"), "Should succeed to open trapdoor rather than open axe");
+    }
 }

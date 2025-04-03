@@ -111,6 +111,9 @@ public final class GameServer {
             if (mainCommandVerb != null) {
                 result = switch (mainCommandVerb) {
                     case "inventory", "inv":
+                        if (!commandEntities.isEmpty()) {
+                            yield "Extraneous entity for command inventory.";
+                        }
                         yield new BuiltInExecutor(this.gameState).executeInventory(currentPlayer);
                     case "get":
                         yield new BuiltInExecutor(this.gameState).executeGet(commandEntities, currentPlayer, currentLocation);
@@ -119,8 +122,14 @@ public final class GameServer {
                     case "goto":
                         yield new BuiltInExecutor(this.gameState).executeGoto(commandEntities, currentPlayer);
                     case "look":
+                        if (!commandEntities.isEmpty()) {
+                            yield "Extraneous entity for command look.";
+                        }
                         yield new BuiltInExecutor(this.gameState).executeLook(currentPlayer.getName(), currentLocation);
                     case "health":
+                        if (!commandEntities.isEmpty()) {
+                            yield "Extraneous entity for command health.";
+                        }
                         yield new BuiltInExecutor(this.gameState).executeHealth(currentPlayer);
                     default:
                         throw new RuntimeException(String.format("Unknown command verb: %s", mainCommandVerb));

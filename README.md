@@ -5,6 +5,7 @@ Some minor achievements ...
 [Minesweeper](#minesweeper)  
 [DB](#simplified-database)  
 [STAG](#simple-text-adventure-game)  
+[Birthday Gift for a friend](#birthday-gift-for-a-friend)  
 
 ## Minesweeper
 
@@ -135,8 +136,10 @@ then NO action should be performed and a suitable warning message sent back to t
 (e.g. `there is more than one 'open' action possible - which one do you want to perform ?`)
 ```
 
-### See some interesting quesitions on Teams:  
-#### Possible Multiple Match 
+### See some interesting quesitions on Teams
+
+#### Possible Multiple Match
+
 ```txt
 **Mikas Vong**
 Hi Simon Lock, I'm wondering if we have the following actions in action file:
@@ -175,7 +178,7 @@ that's an interesting one - it would seem logical to perform the first action (s
 
 For heaven’s sake, shouldn’t the customized action adhere to the single-function principle??  
 
-### Where is the produced entity after player died?  
+#### Where is the produced entity after player died?
 
 ```txt
 **Xiaobo Ma**
@@ -201,7 +204,7 @@ it's not defined in the assignment brief - whatever you like
 
 It’s worth improving my code in these parts!  
 
-### Behaviour of produced entities  
+#### Behaviour of produced entities
 
 ```txt
 **Shrirang Lokhande**

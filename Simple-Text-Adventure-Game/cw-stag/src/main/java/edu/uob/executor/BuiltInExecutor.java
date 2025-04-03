@@ -167,6 +167,10 @@ public class BuiltInExecutor extends CommandExecutor{
         StringBuilder objectsDetails = new StringBuilder();
         for (String objectName : objectsMap.keySet()) {
             String characterDetail = objectsMap.get(objectName).getDescription();
+
+            objectsDetails.append("[");
+            objectsDetails.append(objectName);
+            objectsDetails.append("] ");
             objectsDetails.append(characterDetail);
             objectsDetails.append("; ");
         }

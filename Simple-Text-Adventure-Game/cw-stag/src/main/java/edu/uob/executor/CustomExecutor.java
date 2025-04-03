@@ -119,6 +119,10 @@ public class CustomExecutor extends CommandExecutor{
             }
 
             String objectOldLocationName = super.gameState.getAllEntities().get(objectToConsume).getLivingRoom();
+            // It is NOT possible to perform an action where any subject, consumed entity or produced entity is currently in another player's inventory.
+            if (objectOldLocationName == null && !currentPlayer.getInventory().containsKey(objectToConsume)) {
+                throw new RuntimeException(String.format("Cannot consume \"%s\" here.", objectToConsume));
+            }
             Location objectOldLocation = super.gameState.getAllLocations().get(objectOldLocationName);
 
             EntityType entityType = super.gameState.getAllEntities().get(objectToConsume).getType();
@@ -160,6 +164,10 @@ public class CustomExecutor extends CommandExecutor{
             }
 
             String objectOldLocationName = super.gameState.getAllEntities().get(objectToProduce).getLivingRoom();
+            // It is NOT possible to perform an action where any subject, consumed entity or produced entity is currently in another player's inventory.
+            if (objectOldLocationName == null && !currentPlayer.getInventory().containsKey(objectToProduce)) {
+                throw new RuntimeException(String.format("Cannot produce \"%s\" here.", objectToProduce));
+            }
             Location objectOldLocation = super.gameState.getAllLocations().get(objectOldLocationName);
 
             EntityType entityType =super.gameState.getAllEntities().get(objectToProduce).getType();
