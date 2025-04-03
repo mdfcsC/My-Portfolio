@@ -135,6 +135,89 @@ then NO action should be performed and a suitable warning message sent back to t
 (e.g. `there is more than one 'open' action possible - which one do you want to perform ?`)
 ```
 
+### See some interesting quesitions on Teams:  
+#### Possible Multiple Match 
+```txt
+**Mikas Vong**
+Hi Simon Lock, I'm wondering if we have the following actions in action file:
+<action>
+  <triggers>
+    <keyphrase>acquire</keyphrase>
+  </triggers>
+  <subjects>
+    <entity>coin</entity>
+    <entity>axe</entity>
+  </subjects>
+        ...
+  <narration>You acquire coin and used axe</narration>
+</action>
+ 
+<action>
+  <triggers>
+    <keyphrase>acquire</keyphrase>
+  </triggers>
+  <subjects>
+    <entity>coin</entity>
+  </subjects>
+        ...
+  <narration>You acquire coin</narration>
+</action>
+ 
+If the command is : "acquire coin with axe", should we:
+carry out the first action, or 
+since the second action's subject is satisfied-> ambiguous & presense of extraneous entitiy -> reject
+```
+
+```txt
+**Simon Lock**
+that's an interesting one - it would seem logical to perform the first action (since this is what the user seems to intend). However, this is going beyond what is asked for in the assignment brief (although I might add it as a test for next year ;o)
+```
+
+For heaven’s sake, shouldn’t the customized action adhere to the single-function principle??  
+
+### Where is the produced entity after player died?  
+
+```txt
+**Xiaobo Ma**
+if an action results in player death while producing entities, where should the produced entities be placed at? 
+        <consumed>
+            <entity>health</entity>
+            <entity>health</entity>
+            <entity>health</entity>
+            <entity>TV</entity>
+            <entity>water</entity>
+        </consumed>
+        <produced>
+            <entity>frienda</entity>
+            <entity>friendb</entity>
+        </produced>
+the player dies immediately, but where should frienda and friendb be? at the start location with the reborn player, or left at the player's last location (location where he dies)?
+```
+
+```txt
+**Simon Lock**
+it's not defined in the assignment brief - whatever you like
+```
+
+It’s worth improving my code in these parts!  
+
+### Behaviour of produced entities  
+
+```txt
+**Shrirang Lokhande**
+In the readme.md following description of Game Action is mentioned in Task 7.
+ 
+When an entity is produced, it should be moved from its current location in the game (which might be in the storeroom) to the location in which the action was trigged. The entity should NOT automatically appear in a players inventory - it might be furniture (which the player can't carry) or it might be an artefact they don't actually want to pick up !
+Can produced entities can be present  anywhere in the game (player's current location, outside of player's current location or storeroom), except other player's inventory?
+```
+
+```txt
+**Simon Lock**
+yes - that is correct
+```
+
+Why Simon said "correct"? Isn't that a contradiction in terms?  
+
 ## Birthday Gift for a friend  
 
 *2025-04-01*  
