@@ -6,6 +6,7 @@ Some minor achievements ...
 [DB](#simplified-database)  
 [STAG](#simple-text-adventure-game)  
 [Birthday Gift for a friend](#birthday-gift-for-a-friend)  
+[A New Personal Website Main Page](#build-the-personal-website-pages-with-nextjs-and-vercel)  
 
 ## Minesweeper
 
@@ -234,3 +235,17 @@ Copy from [faahim's happy-birthday](https://github.com/faahim/happy-birthday#)
 朋友明天过生日，想送一个代码相关的礼物。但一是时间比较紧张，前段时间忙作业去了，二是自己技术力不够、想法不多。之前让 ChatGPT 和 DeepSeek 生成过几个网页小游戏，但效果一般。最后在 GitHub 上搜了一下别人的成果，感觉这个大神的很不错，审美在线，修改方便。感谢开源！  
 
 在 Claude 和 Cursor 的帮助下，花了几个小时完成了 [这个礼物](https://mdfcsc.github.io/My-Portfolio/BirthdayGift-Jing/index.html) ！增加了音乐、点按快进等功能，把网络资源下载替换为本地资源（因为觉得国内会限制访问外网的一些东西），还纠结了一会儿要不要买国内的托管平台，因为网上很多说 GitHub Pages 在国内会限速或者打不开，但让朋友试了一下打开之前做的扫雷的游戏页面，她可以正常打开。接下来就等她反馈了哈哈哈哈哈哈哈 😆  
+
+## Build the Personal Website Pages with Next.js And Vercel
+
+*2025-07-15*
+
+由于在学习 React 和 Next.JS ，于是想着更新下个人主页面来练练手。
+
+> 为什么新建了一个仓库并使用 Vercel 部署？见 [Next-Portfolio 的记录](https://github.com/mdfcsC/Next-Portfolio?tab=readme-ov-file#personal-website-pages)
+
+在B站上找了跟着 [学习 React 的视频](https://www.bilibili.com/video/BV1kH4y117yr/) 和 [学习 Next.JS 的视频](https://www.bilibili.com/video/BV157pRe8EyD/)  
+可能本身学习和练习的就少，我一直觉得前端网页开发很烦、很难、很累，JS 的语法很神经、莫名其妙的样式就改了、 CSS 的名称我永远记不住、缓存异步回调一堆问题（现在还有一个静态网页部署的问题...）  
+而且我觉得前端开发也挺考审美的
+
+没有 Claude 老师的手把手帮助根本搭不出来这个 [新页面](https://mdfcsc-next-portfolio.vercel.app/)，顺便把 [这个仓库的主页面](https://mdfcsc.github.io/My-Portfolio/index.html) 设置了自动跳转
