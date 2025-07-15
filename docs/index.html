@@ -1,30 +1,134 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Docs</title>
-  </head>
-  <body>
-    <h1>Welcome to my "published work"!</h1>
-    <h2>First game, <a id="minsweeperLink">Minesweeper (My Version)</a> </h2>
-    <div>
-        <p>Best played in a real web browser, 'cause that's the only place I tested it.</p>
-        <p>See the <a href="https://github.com/mdfcsC/My-Portfolio/blob/main/README.md#minesweeper">README.md</a> in my GitHub repo for more details, if you have access.</p>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to mdfcsC's Portfolio</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        .redirect-notice {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+        .redirect-notice h2 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        .countdown {
+            font-size: 1.2em;
+            color: #1976d2;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2196f3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        .button:hover {
+            background-color: #1976d2;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .footer a {
+            color: #2196f3;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2196f3;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to my "published work"!</h1>
+        
+        <div class="redirect-notice">
+            <h2>🚀 New Portfolio Site Available!</h2>
+            <p>I've moved to a new Next.js portfolio site with better features and design.</p>
+            <div class="spinner"></div>
+            <div class="countdown">Redirecting in <span id="counter">5</span> seconds...</div>
+            <a href="https://mdfcsc-next-portfolio.vercel.app/" class="button">Visit New Portfolio Now</a>
+        </div>
+        
+        <div class="footer">
+            <p>Created by <a href="https://github.com/mdfcsc">@mdfcsC</a></p>
+            <p>(trying hard to get familiar with GitHub Pages ...)</p>
+            <p>(then trying hard to get familiar with Next.JS and Vercel ...)</p>
+            <p>(Can't do it without AI ...)</p>
+        </div>
     </div>
-    <h2>A birthday gift for my friend</h2>
-    <div>
-      <p>With assistance of Claude and Cursor, <a id="jingBirthdayGiftLink">a web page</a> modified based on someone else's codes and design.</p>
-    </div>
-  </body>
-  <footer>
-    <p>----------</p>
-    <p>Created by <a href="https://github.com/mdfcsC">@mdfcsC</a></p>
-    <p>(trying hard to get familiar with GitHub Pages ...)</p>
-  </footer>
 
-  <!-- 给链接添加时间戳，确保每次都是最新版本 -->
-  <script>
-    var timestamp = new Date().getTime();
-    document.getElementById('minsweeperLink').href = 'minesweeper/minesweeper.html?v=' + timestamp;
-    document.getElementById('jingBirthdayGiftLink').href = 'BirthdayGift-Jing/index.html?v=' + timestamp;
-  </script>
+    <script>
+        // Countdown timer
+        let countdownElement = document.getElementById('counter');
+        let countdown = 5;
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = 'https://mdfcsc-next-portfolio.vercel.app/';
+            }
+        }, 1000);
+        
+        // Also redirect immediately if user clicks anywhere
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'A') {
+                window.location.href = 'https://mdfcsc-next-portfolio.vercel.app/';
+            }
+        });
+    </script>
+</body>
 </html>
